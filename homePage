@@ -79,6 +79,14 @@
             <p style="font-size: 10px; color: var(--text-sub); margin-top: 15px; margin-bottom: 0; direction: ltr;">© 2026 Gold Plus App</p>
         </div>
     <div class="bottom-nav">
+        <a href="HomePage.html" class="nav-item"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
+        
+        <a href="ledger.html" class="nav-item"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
+        <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
+        <a href="locations.html" class="nav-item"><span class="nav-icon">📍</span><span data-i18n="nav_loc">المواقع</span></a>
+        
+        <a href="report.html" class="nav-item"><span class="nav-icon">📊</span><span data-i18n="nav_rep">التقارير</span></a>
+    </div>
         <a href="HomePage.html" class="nav-item active"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
         <a href="ledger.html" class="nav-item"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
         <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
@@ -215,3 +223,4 @@
 </body>
 
 </html>
+
