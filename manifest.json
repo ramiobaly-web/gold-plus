@@ -1,0 +1,16 @@
+{
+  "name": "Gold Plus - جولد بلس",
+  "short_name": "Gold+",
+  "description": "دليل ومحفظة المستثمر في الذهب",
+  "start_url": "./HomePage.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

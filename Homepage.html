@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+<link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gold Plus">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app_title">جولد بلس ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --gold-accent: #D4AF37; --text-main: #FFFFFF; --text-sub: #A0A0A0; --nav-bg: #181818; --border-color: #333333; --modal-bg: rgba(0, 0, 0, 0.85); }
+        body.light-theme { --bg-color: #F5F7FA; --card-bg: #FFFFFF; --gold-accent: #B8860B; --text-main: #121212; --text-sub: #555555; --nav-bg: #FFFFFF; --border-color: #E5E5E5; --modal-bg: rgba(255, 255, 255, 0.85); }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 20px 80px 20px; transition: all 0.3s ease; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
+        .app-title { color: var(--gold-accent); font-size: 24px; font-weight: 700; }
+        .controls { display: flex; gap: 8px; }
+        .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: 'Cairo'; font-size: 16px; font-weight: 600; }
+        .update-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .time-stamp { font-size: 12px; color: var(--text-sub); direction: ltr; }
+        .update-btn { background-color: var(--gold-accent); color: #000; border: none; padding: 6px 12px; border-radius: 5px; font-family: 'Cairo'; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 25px; }
+        .price-card { background-color: var(--card-bg); padding: 12px 5px; border-radius: 10px; text-align: center; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .price-card h3 { margin: 0 0 8px 0; font-size: 12px; color: var(--text-sub); }
+        .local-price { font-size: 15px; font-weight: 700; color: var(--gold-accent); margin: 0; direction: ltr;}
+        .usd-price { font-size: 11px; color: var(--text-sub); margin-top: 5px; direction: ltr;}
+        .main-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .big-nav-btn { background-color: var(--card-bg); border: 1px solid var(--gold-accent); color: var(--text-main); padding: 25px 10px; border-radius: 15px; text-align: center; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .big-nav-icon { font-size: 35px; } .big-nav-text { font-size: 15px; font-weight: 700; font-family: 'Cairo';}
+        .btn-fill { background-color: var(--gold-accent); color: #000; } .btn-fill .big-nav-text { color: #000; }
+        .bottom-nav { position: fixed; bottom: 0; right: 0; width: 100%; background-color: var(--nav-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { text-align: center; color: var(--text-sub); font-size: 11px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none;} 
+        .nav-item.active { color: var(--gold-accent); } .nav-icon { font-size: 18px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal-content { background-color: var(--bg-color); border-top: 2px solid var(--gold-accent); border-radius: 20px 20px 0 0; width: 100%; padding: 25px; box-sizing: border-box; }
+        .form-group { margin-bottom: 15px; } .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-sub); font-weight: 600; }
+        .form-control { width: 100%; padding: 12px; background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; font-size: 15px; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="app-title" data-i18n="app_title">جولد بلس ✨</div>
+        <div class="controls"><button class="icon-btn" onclick="openSettings()">⚙️</button><button class="icon-btn" onclick="toggleTheme()" id="theme-icon">🌙</button></div>
+    </div>
+
+    <div class="update-bar">
+        <div class="time-stamp" id="last-update" data-i18n="updating">جاري التحديث...</div>
+        <button class="update-btn" id="update-btn" onclick="fetchGoldPrices()" data-i18n="update_btn">تحديث السعر</button>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="price-card"><h3 data-i18n="ounce">الأونصة</h3><p class="local-price"><span id="ounce-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="ounce-usd">0</span> $</p></div>
+        <div class="price-card"><h3 data-i18n="gram24">الجرام (24)</h3><p class="local-price"><span id="gram-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="gram-usd">0</span> $</p></div>
+        <div class="price-card"><h3 data-i18n="q_kilo">¼ كيلو</h3><p class="local-price"><span id="q-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="q-kilo-usd">0</span> $</p></div>
+        <div class="price-card"><h3 data-i18n="h_kilo">½ كيلو</h3><p class="local-price"><span id="h-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="h-kilo-usd">0</span> $</p></div>
+        <div class="price-card"><h3 data-i18n="kilo">الكيلو</h3><p class="local-price"><span id="kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="kilo-usd">0</span> $</p></div>
+        <div class="price-card"><h3 data-i18n="tola">التولة</h3><p class="local-price"><span id="tola-local">0</span> <span class="curr-sym">SAR</span></p><p class="usd-price"><span id="tola-usd">0</span> $</p></div>
+    </div>
+
+    <div class="main-actions-grid">
+        <a href="ledger.html" class="big-nav-btn btn-fill"><span class="big-nav-icon">📓</span><span class="big-nav-text" data-i18n="goto_ledger">الانتقال إلى الدفتر</span></a>
+        <a href="tools.html" class="big-nav-btn"><span class="big-nav-icon">🧮</span><span class="big-nav-text" data-i18n="goto_tools">الانتقال إلى الحاسبة</span></a>
+    </div>
+<div style="margin: 25px 0 15px 0; padding: 15px; border: 1px solid rgba(212, 175, 55, 0.3); background-color: var(--card-bg); border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 5px;" data-i18n="developed_by">تم تصميم وتطوير التطبيق بواسطة</p>
+            <h4 style="margin: 0; color: var(--gold-accent); font-size: 16px; font-weight: 700;">Rami Obaly - رامي أوبلي</h4>
+            
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px;">
+                <a href="mailto:rami.obaly@gmail.com" style="flex: 1; color: var(--text-main); text-decoration: none; font-size: 12px; border: 1px solid var(--border-color); padding: 8px; border-radius: 8px; background: var(--bg-color);">
+                    ✉️ تواصل عبر الإيميل
+                </a>
+                <a href="https://www.linkedin.com/in/ramii" target="_blank" style="flex: 1; color: white; text-decoration: none; font-size: 12px; border: none; padding: 8px; border-radius: 8px; background: #0A66C2; font-weight: bold;">
+                    🔗 LinkedIn
+                </a>
+            </div>
+            <p style="font-size: 10px; color: var(--text-sub); margin-top: 15px; margin-bottom: 0; direction: ltr;">© 2026 Gold Plus App</p>
+        </div>
+    <div class="bottom-nav">
+        <a href="HomePage.html" class="nav-item active"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
+        <a href="ledger.html" class="nav-item"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
+        <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
+        <a href="locations.html" class="nav-item"><span class="nav-icon">📍</span><span data-i18n="nav_loc">المواقع</span></a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span><span data-i18n="nav_rep">التقارير</span></a>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: var(--gold-accent);" data-i18n="settings_title">الإعدادات ⚙️</h3>
+                <button onclick="closeSettings()" style="background:none; border:none; color:var(--text-sub); font-size:20px;">✖</button>
+            </div>
+            <div class="form-group">
+                <label data-i18n="lang_label">لغة التطبيق</label>
+                <select id="lang-select" class="form-control">
+                    <option value="ar">العربية (Arabic)</option><option value="en">English (الإنجليزية)</option>
+                    <option value="hi">हिन्दी (Hindi)</option><option value="ur">اردو (Urdu)</option>
+                    <option value="id">Bahasa Indonesia</option><option value="tl">Tagalog (Filipino)</option>
+                    <option value="tr">Türkçe (Turkish)</option><option value="fr">Français (French)</option>
+                    <option value="fa">فارسی (Persian)</option><option value="bn">বাংলা (Bengali)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label data-i18n="curr_label">العملة المحلية</label>
+                <select id="currency-select" class="form-control" onchange="handleCurrencyChange()">
+                    <option value="SAR" data-rate="3.75">ريال سعودي (SAR)</option><option value="AED" data-rate="3.67">درهم إماراتي (AED)</option>
+                    <option value="JOD" data-rate="0.71">دينار أردني (JOD)</option><option value="EGP" data-rate="48.50">جنيه مصري (EGP)</option>
+                    <option value="USD" data-rate="1">دولار أمريكي (USD)</option><option value="CUSTOM" data-i18n="pay_other">أخرى (إدخال يدوي)</option>
+                </select>
+            </div>
+            <div class="form-group" id="custom-curr-name-group" style="display: none;">
+                <label>اسم العملة (رمز)</label><input type="text" id="custom-curr-name" class="form-control" placeholder="EUR">
+            </div>
+            <div class="form-group">
+                <label data-i18n="rate_label">قيمة العملة مقابل الدولار</label>
+                <input type="number" id="currency-rate" class="form-control" value="3.75" step="0.01">
+            </div>
+            <button class="update-btn" style="width: 100%; padding: 12px; font-size: 16px;" onclick="saveSettings()" data-i18n="save_btn">حفظ الإعدادات ✔️</button>
+        </div>
+    </div>
+
+    <script>
+        const OUNCE_IN_GRAMS = 31.1034768; const TOLA_IN_GRAMS = 11.6638038;
+        let userSettings = JSON.parse(localStorage.getItem('gold_settings')) || { lang: 'ar', currSymbol: 'SAR', currRate: 3.75 };
+
+        // القاموس الشامل المشترك
+        const translations = {
+            "ar": { app_title: "جولد بلس ✨", nav_home: "الرئيسية", nav_ledger: "الدفتر", nav_tools: "الأدوات", nav_loc: "المواقع", nav_rep: "التقارير", updating: "جاري التحديث...", updated: "تم التحديث: ", failed: "فشل التحديث", update_btn: "تحديث السعر", ounce: "الأونصة", gram24: "الجرام (24)", q_kilo: "¼ كيلو", h_kilo: "½ كيلو", kilo: "الكيلو", tola: "التولة", goto_ledger: "الانتقال إلى الدفتر", goto_tools: "الانتقال إلى الحاسبة", settings_title: "الإعدادات ⚙️", lang_label: "لغة التطبيق", curr_label: "العملة المحلية", rate_label: "قيمة العملة مقابل الدولار", save_btn: "حفظ ✔️", pay_other: "أخرى (إدخال يدوي)", dir: "rtl" },
+            "en": { app_title: "Gold Plus ✨", nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Locations", nav_rep: "Reports", updating: "Updating...", updated: "Updated: ", failed: "Update Failed", update_btn: "Update Price", ounce: "Ounce", gram24: "Gram (24)", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", goto_ledger: "Go to Ledger", goto_tools: "Go to Calculator", settings_title: "Settings ⚙️", lang_label: "App Language", curr_label: "Local Currency", rate_label: "Currency Rate vs USD", save_btn: "Save ✔️", pay_other: "Other (Custom)", dir: "ltr" },
+            "ur": { app_title: "گولڈ پلس ✨", nav_home: "ہوم", nav_ledger: "لیجر", nav_tools: "ٹولز", nav_loc: "مقامات", nav_rep: "رپورٹس", updating: "اپ ڈیٹ...", updated: "اپ ڈیٹ: ", failed: "ناکام", update_btn: "اپ ڈیٹ کریں", ounce: "اونس", gram24: "گرام", q_kilo: "¼ کلو", h_kilo: "½ کلو", kilo: "کلو", tola: "تولہ", goto_ledger: "لیجر", goto_tools: "کیلکولیٹر", settings_title: "ترتیبات ⚙️", lang_label: "زبان", curr_label: "مقامی کرنسی", rate_label: "کرنسی ریٹ", save_btn: "محفوظ ✔️", pay_other: "دیگر", dir: "rtl" },
+            "hi": { app_title: "गोल्ड प्लस ✨", nav_home: "होम", nav_ledger: "लेजर", nav_tools: "टूल्स", nav_loc: "स्थान", nav_rep: "रिपोर्ट", updating: "अपडेट...", updated: "अपडेट: ", failed: "विफल", update_btn: "अपडेट करें", ounce: "औंस", gram24: "ग्राम", q_kilo: "¼ किलो", h_kilo: "½ किलो", kilo: "किलो", tola: "तोला", goto_ledger: "लेजर पर जाएं", goto_tools: "कैलकुलेटर", settings_title: "सेटिंग्स ⚙️", lang_label: "भाषा", curr_label: "मुद्रा", rate_label: "विनिमय दर", save_btn: "सहेजें ✔️", pay_other: "अन्य", dir: "ltr" },
+            "id": { app_title: "Gold Plus ✨", nav_home: "Beranda", nav_ledger: "Buku", nav_tools: "Alat", nav_loc: "Lokasi", nav_rep: "Laporan", updating: "Memperbarui...", updated: "Diperbarui: ", failed: "Gagal", update_btn: "Perbarui", ounce: "Ons", gram24: "Gram", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", goto_ledger: "Ke Buku Besar", goto_tools: "Ke Kalkulator", settings_title: "Pengaturan ⚙️", lang_label: "Bahasa", curr_label: "Mata Uang", rate_label: "Nilai Tukar", save_btn: "Simpan ✔️", pay_other: "Lainnya", dir: "ltr" },
+            "tl": { app_title: "Gold Plus ✨", nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Lokasyon", nav_rep: "Ulat", updating: "Ina-update...", updated: "Na-update: ", failed: "Nabigo", update_btn: "I-update", ounce: "Onsa", gram24: "Gramo", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", goto_ledger: "Pumunta sa Ledger", goto_tools: "Calculator", settings_title: "Settings ⚙️", lang_label: "Wika", curr_label: "Pera", rate_label: "Halaga ng Palitan", save_btn: "I-save ✔️", pay_other: "Iba", dir: "ltr" },
+            "tr": { app_title: "Altın Plus ✨", nav_home: "Ana Sayfa", nav_ledger: "Defter", nav_tools: "Araçlar", nav_loc: "Konumlar", nav_rep: "Raporlar", updating: "Güncelleniyor...", updated: "Güncellendi: ", failed: "Başarısız", update_btn: "Güncelle", ounce: "Ons", gram24: "Gram", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", goto_ledger: "Defter'e Git", goto_tools: "Hesap Makinesi", settings_title: "Ayarlar ⚙️", lang_label: "Dil", curr_label: "Para Birimi", rate_label: "Döviz Kuru", save_btn: "Kaydet ✔️", pay_other: "Diğer", dir: "ltr" },
+            "fr": { app_title: "Or Plus ✨", nav_home: "Accueil", nav_ledger: "Registre", nav_tools: "Outils", nav_loc: "Lieux", nav_rep: "Rapports", updating: "Mise à jour...", updated: "Mis à jour: ", failed: "Échec", update_btn: "Mettre à jour", ounce: "Once", gram24: "Gramme", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", goto_ledger: "Aller au Registre", goto_tools: "Calculatrice", settings_title: "Paramètres ⚙️", lang_label: "Langue", curr_label: "Devise", rate_label: "Taux de change", save_btn: "Enregistrer ✔️", pay_other: "Autre", dir: "ltr" },
+            "fa": { app_title: "گلد پلاس ✨", nav_home: "خانه", nav_ledger: "دفترچه", nav_tools: "ابزارها", nav_loc: "مکان‌ها", nav_rep: "گزارش‌ها", updating: "در حال بروزرسانی...", updated: "بروزرسانی شد: ", failed: "ناموفق", update_btn: "بروزرسانی", ounce: "اونس", gram24: "گرم", q_kilo: "¼ کیلو", h_kilo: "½ کیلو", kilo: "کیلو", tola: "تولا", goto_ledger: "رفتن به دفترچه", goto_tools: "ماشین حساب", settings_title: "تنظیمات ⚙️", lang_label: "زبان", curr_label: "ارز", rate_label: "نرخ ارز", save_btn: "ذخیره ✔️", pay_other: "دیگر", dir: "rtl" },
+            "bn": { app_title: "গোল্ড প্লাস ✨", nav_home: "হোম", nav_ledger: "লেজার", nav_tools: "টুলস", nav_loc: "অবস্থান", nav_rep: "রিপোর্ট", updating: "আপডেট হচ্ছে...", updated: "আপডেট হয়েছে: ", failed: "ব্যর্থ", update_btn: "আপডেট", ounce: "আউন্স", gram24: "গ্রাম", q_kilo: "¼ কিলো", h_kilo: "½ কিলো", kilo: "কিলো", tola: "তোলা", goto_ledger: "খাতায় যান", goto_tools: "ক্যালকুলেটর", settings_title: "সেটিংস ⚙️", lang_label: "ভাষা", curr_label: "মুদ্রা", rate_label: "বিনিময় হার", save_btn: "সংরক্ষণ ✔️", pay_other: "অন্যান্য", dir: "ltr" }
+        };
+
+        function applyGlobalTranslations() {
+            const t = translations[userSettings.lang] || translations['en'];
+            document.documentElement.dir = t.dir || 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) { if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t[key]; else el.innerText = t[key]; }
+            });
+            document.querySelectorAll('.curr-sym').forEach(e => e.innerText = userSettings.currSymbol);
+        }
+
+        async function fetchGoldPrices() {
+            const t = translations[userSettings.lang] || translations['ar'];
+            const updateBtn = document.getElementById('update-btn');
+            updateBtn.disabled = true; document.getElementById('last-update').innerText = t.updating || "Updating...";
+            try {
+                let response = await fetch("https://api.gold-api.com/price/XAU");
+                let data = await response.json(); let liveOunceUsd = data.price;
+                if(!liveOunceUsd || isNaN(liveOunceUsd)) throw new Error("Invalid Price");
+                let rate = parseFloat(userSettings.currRate) || 3.75;
+                
+                // تحديث الستة بطاقات بالدولار والعملة المحلية
+                document.getElementById('ounce-usd').innerText = liveOunceUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('ounce-local').innerText = Math.round(liveOunceUsd * rate).toLocaleString('en-US');
+                document.getElementById('gram-usd').innerText = (liveOunceUsd / OUNCE_IN_GRAMS).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('gram-local').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * rate).toFixed(2);
+                document.getElementById('kilo-usd').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * 1000).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kilo-local').innerText = Math.round(((liveOunceUsd / OUNCE_IN_GRAMS) * 1000) * rate).toLocaleString('en-US');
+                document.getElementById('tola-usd').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * TOLA_IN_GRAMS).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('tola-local').innerText = Math.round(((liveOunceUsd / OUNCE_IN_GRAMS) * TOLA_IN_GRAMS) * rate).toLocaleString('en-US');
+                document.getElementById('q-kilo-usd').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * 250).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('q-kilo-local').innerText = Math.round(((liveOunceUsd / OUNCE_IN_GRAMS) * 250) * rate).toLocaleString('en-US');
+                document.getElementById('h-kilo-usd').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * 500).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('h-kilo-local').innerText = Math.round(((liveOunceUsd / OUNCE_IN_GRAMS) * 500) * rate).toLocaleString('en-US');
+
+                let now = new Date(); document.getElementById('last-update').innerText = (t.updated || "") + now.toLocaleTimeString(userSettings.lang === 'en' ? 'en-US' : 'ar-SA', {hour: '2-digit', minute:'2-digit'});
+            } catch(e) { document.getElementById('last-update').innerText = t.failed || "Failed"; } finally { updateBtn.disabled = false; }
+        }
+
+        function handleCurrencyChange() {
+            const select = document.getElementById('currency-select');
+            if(select.value === 'CUSTOM') { document.getElementById('custom-curr-name-group').style.display = 'block'; document.getElementById('currency-rate').value = ''; } 
+            else { document.getElementById('custom-curr-name-group').style.display = 'none'; document.getElementById('currency-rate').value = select.options[select.selectedIndex].getAttribute('data-rate'); }
+        }
+        function openSettings() { document.getElementById('lang-select').value = userSettings.lang; document.getElementById('currency-rate').value = userSettings.currRate; document.getElementById('settings-modal').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+        function saveSettings() {
+            const lang = document.getElementById('lang-select').value; const currSelect = document.getElementById('currency-select').value;
+            let currSymbol = currSelect === 'CUSTOM' ? (document.getElementById('custom-curr-name').value || 'LOC') : currSelect;
+            let currRate = parseFloat(document.getElementById('currency-rate').value);
+            if(isNaN(currRate) || currRate <= 0) return alert("الرجاء إدخال قيمة صحيحة!");
+            localStorage.setItem('gold_settings', JSON.stringify({ lang, currSymbol, currRate }));
+            closeSettings(); location.reload();
+        }
+        // 1. دالة قراءة الثيم المحفوظ عند فتح الصفحة
+        function applySavedTheme() {
+            if (localStorage.getItem('gold_theme') === 'light') {
+                document.body.classList.add('light-theme');
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.innerText = '☀️';
+            }
+        }
+
+        // 2. دالة التبديل الجديدة (تحفظ الخيار في ذاكرة المتصفح)
+        function toggleTheme() { 
+            document.body.classList.toggle('light-theme'); 
+            const isLight = document.body.classList.contains('light-theme');
+            const icon = document.getElementById('theme-icon'); 
+            if(icon) icon.innerText = isLight ? '☀️' : '🌙'; 
+            localStorage.setItem('gold_theme', isLight ? 'light' : 'dark'); // هذا السطر هو الذي يحفظ الإعداد
+        }
+
+        window.onload = () => { applySavedTheme(); applyGlobalTranslations(); fetchGoldPrices(); };;
+    </script>
+</body>
+</html>

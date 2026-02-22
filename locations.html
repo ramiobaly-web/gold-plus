@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+<link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gold Plus">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="loc_title">المواقع - جولد بلس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --gold-accent: #D4AF37; --text-main: #FFFFFF; --text-sub: #A0A0A0; --nav-bg: #181818; --border-color: #333333; }
+        body.light-theme { --bg-color: #F5F7FA; --card-bg: #FFFFFF; --gold-accent: #B8860B; --text-main: #121212; --text-sub: #555555; --nav-bg: #FFFFFF; --border-color: #E5E5E5; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 15px 15px 80px 15px; transition: all 0.3s ease; }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;} 
+        .app-title { color: var(--gold-accent); font-size: 20px; font-weight: 700; } 
+        .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: 'Cairo'; font-weight: 600;}
+        
+        .prices-header { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+        .update-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; }
+        .time-stamp { font-size: 11px; color: var(--text-sub); direction: ltr; } 
+        .update-btn { background-color: var(--gold-accent); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-family: 'Cairo'; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .mini-dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; } 
+        .mini-price-card { text-align: center; border-left: 1px solid var(--border-color); padding: 5px 0; } 
+        .mini-price-card:nth-child(3n) { border-left: none; } 
+        .mini-price-card h3 { margin: 0 0 2px 0; font-size: 11px; color: var(--text-sub); } 
+        .mini-local-price { font-size: 13px; font-weight: 700; color: var(--gold-accent); margin: 0; direction: ltr;} 
+        .mini-usd-price { font-size: 10px; color: var(--text-sub); margin: 2px 0 0 0; direction: ltr;}
+        
+        .disclaimer-text { font-size: 10px; color: var(--text-sub); text-align: center; margin: 10px 0 0 0; padding-top: 10px; border-top: 1px dashed var(--border-color); line-height: 1.5;}
+
+        .tips-card { background-color: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 20px; }
+        .tips-title { font-size: 13px; font-weight: 700; color: var(--gold-accent); margin: 0 0 8px 0; display: flex; align-items: center; gap: 5px;}
+        .tips-list { margin: 0; padding-inline-start: 20px; font-size: 11.5px; color: var(--text-main); line-height: 1.6;}
+        .tips-list li { margin-bottom: 4px; }
+
+        .filters-container { display: flex; gap: 15px; margin-bottom: 25px; background-color: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05);}
+        .filter-group { flex: 1; } .filter-group label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 8px; font-weight: 700; }
+        .form-control { width: 100%; padding: 12px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; font-weight: 600;} 
+        .form-control:focus { outline: none; border-color: var(--gold-accent); }
+        
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center;}
+        .results-count { font-size: 13px; color: var(--gold-accent); font-weight: 700; background: rgba(212, 175, 55, 0.1); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3); }
+        
+        .stores-list { display: flex; flex-direction: column; gap: 15px; }
+        .store-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; border-right: 4px solid var(--gold-accent); position: relative; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+        
+        /* شارة احترافية لا تغطي النص */
+        .inline-badge { background-color: rgba(212, 175, 55, 0.15); color: var(--gold-accent); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--gold-accent); margin-inline-start: 8px; vertical-align: middle;}
+        
+        .store-header { margin-bottom: 12px; } 
+        .store-name { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0 0 6px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px;} 
+        .store-desc { font-size: 12px; color: var(--text-sub); margin: 0; line-height: 1.5;}
+        .store-actions { display: flex; gap: 12px; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px; }
+        .btn-action { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; padding: 10px; border-radius: 8px; font-family: 'Cairo'; font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; text-decoration: none; }
+        .btn-call { background-color: rgba(46, 125, 50, 0.1); color: #4CAF50; border: 1px solid rgba(46, 125, 50, 0.3); } 
+        .btn-map { background-color: rgba(212, 175, 55, 0.1); color: var(--gold-accent); border: 1px solid rgba(212, 175, 55, 0.3); }
+        
+        .bottom-nav { position: fixed; bottom: 0; right: 0; width: 100%; background-color: var(--nav-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; } .nav-item { text-align: center; color: var(--text-sub); font-size: 11px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none;} .nav-item.active { color: var(--gold-accent); } .nav-icon { font-size: 18px; display: block;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <div class="app-title" data-i18n="loc_page_title">المواقع المعتمدة 📍</div>
+            <button class="icon-btn" onclick="toggleTheme()" id="theme-icon">🌙</button>
+        </div>
+
+        <div class="prices-header">
+            <div class="update-bar">
+                <div class="time-stamp" id="last-update" data-i18n="updating">جاري التحديث...</div>
+                <button class="update-btn" id="update-btn" onclick="fetchGoldPrices()" data-i18n="update_btn">تحديث السعر</button>
+            </div>
+            <div class="mini-dashboard-grid">
+                <div class="mini-price-card"><h3 data-i18n="ounce">الأونصة</h3><p class="mini-local-price"><span id="ounce-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="ounce-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="gram24">الجرام (24)</h3><p class="mini-local-price"><span id="gram-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="gram-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="q_kilo">¼ كيلو</h3><p class="mini-local-price"><span id="q-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="q-kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="h_kilo">½ كيلو</h3><p class="mini-local-price"><span id="h-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="h-kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="kilo">الكيلو</h3><p class="mini-local-price"><span id="kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="tola">التولة</h3><p class="mini-local-price"><span id="tola-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="tola-usd">0</span> $</p></div>
+            </div>
+            <p class="disclaimer-text" data-i18n="price_disclaimer">ملاحظة: الأسعار أعلاه هي من سعر الشاشة العالمية وقد تختلف عن أسعار المحلات حيث يضاف عليها العمولات والمصنعية.</p>
+        </div>
+
+        <div class="tips-card">
+            <h4 class="tips-title" data-i18n="tips_title">💡 نصائح للمستثمر</h4>
+            <ul class="tips-list">
+                <li data-i18n="tip_1">استخدم 🧮 <b>حاسبة العمولة</b> في قسم "الأدوات" لمعرفة المصنعية الفعلية التي يضيفها التاجر بدقة.</li>
+                <li data-i18n="tip_2">قارن بين عدة محلات قبل الشراء للحصول على أفضل سعر متاح للسبائك.</li>
+            </ul>
+        </div>
+
+        <div class="filters-container">
+            <div class="filter-group">
+                <label data-i18n="country_label">الدولة</label>
+                <select id="country-select" class="form-control" onchange="updateCities()">
+                    <option value="saudi" data-i18n="country_saudi">السعودية</option>
+                    <option value="uae" data-i18n="country_uae">الإمارات</option>
+                    <option value="jordan" data-i18n="country_jordan">الأردن</option>
+                    <option value="kuwait" data-i18n="country_kuwait">الكويت</option>
+                    <option value="oman" data-i18n="country_oman">عُمان</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label data-i18n="city_label">المدينة</label>
+                <select id="city-select" class="form-control" onchange="filterStores()"></select>
+            </div>
+        </div>
+
+        <div class="section-title"><span data-i18n="store_list_title">قائمة المحلات</span> <span class="results-count" id="results-count">0</span></div>
+        <div class="stores-list" id="stores-container">
+            </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="HomePage.html" class="nav-item"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
+        <a href="ledger.html" class="nav-item"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
+        <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
+        <a href="locations.html" class="nav-item active"><span class="nav-icon">📍</span><span data-i18n="nav_loc">المواقع</span></a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span><span data-i18n="nav_rep">التقارير</span></a>
+    </div>
+
+    <script>
+        const OUNCE_IN_GRAMS = 31.1034768; const TOLA_IN_GRAMS = 11.6638038;
+        let userSettings = JSON.parse(localStorage.getItem('gold_settings')) || { lang: 'ar', currSymbol: 'SAR', currRate: 3.75 };
+
+        // القاموس العملاق مع إضافات المواقع والنصائح
+        const translations = {
+            "ar": { 
+                app_title: "جولد بلس ✨", loc_title: "المواقع 📍", nav_home: "الرئيسية", nav_ledger: "الدفتر", nav_tools: "الأدوات", nav_loc: "المواقع", nav_rep: "التقارير", 
+                updating: "جاري التحديث...", updated: "تم التحديث: ", failed: "فشل التحديث", update_btn: "تحديث السعر", 
+                ounce: "الأونصة", gram24: "الجرام (24)", q_kilo: "¼ كيلو", h_kilo: "½ كيلو", kilo: "الكيلو", tola: "التولة", 
+                loc_page_title: "المواقع المعتمدة 📍", country_label: "الدولة", city_label: "المدينة", store_list_title: "قائمة المحلات", no_stores: "لا توجد محلات مسجلة. 🔍", call_btn: "📞 اتصال", map_btn: "🗺️ الموقع", specialist_badge: "سبائك", 
+                country_saudi: "السعودية", country_uae: "الإمارات", country_jordan: "الأردن", country_kuwait: "الكويت", country_oman: "عُمان", 
+                city_riyadh: "الرياض", city_jeddah: "جدة", city_madinah: "المدينة المنورة", city_dammam: "الدمام", city_dubai: "دبي", city_abudhabi: "أبو ظبي", city_amman: "عمّان", city_kuwait_city: "مدينة الكويت", city_muscat: "مسقط", 
+                price_disclaimer: "* ملاحظة: الأسعار أعلاه هي من سعر الشاشة العالمية وقد تختلف عن أسعار المحلات حيث يضاف عليها العمولات والمصنعية.",
+                tips_title: "💡 نصائح للمستثمر", tip_1: "استخدم 🧮 حاسبة العمولة في قسم 'الأدوات' لمعرفة المصنعية الفعلية التي يضيفها التاجر.", tip_2: "قارن بين عدة محلات قبل الشراء للحصول على أفضل سعر متاح للسبائك.", dir: "rtl" 
+            },
+            "en": { 
+                app_title: "Gold Plus ✨", loc_title: "Locations 📍", nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Locations", nav_rep: "Reports", 
+                updating: "Updating...", updated: "Updated: ", failed: "Failed", update_btn: "Update Price", 
+                ounce: "Ounce", gram24: "Gram (24)", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", 
+                loc_page_title: "Verified Locations 📍", country_label: "Country", city_label: "City", store_list_title: "Store List", no_stores: "No stores found. 🔍", call_btn: "📞 Call", map_btn: "🗺️ Map", specialist_badge: "Bullion", 
+                country_saudi: "Saudi Arabia", country_uae: "UAE", country_jordan: "Jordan", country_kuwait: "Kuwait", country_oman: "Oman", 
+                city_riyadh: "Riyadh", city_jeddah: "Jeddah", city_madinah: "Madinah", city_dammam: "Dammam", city_dubai: "Dubai", city_abudhabi: "Abu Dhabi", city_amman: "Amman", city_kuwait_city: "Kuwait City", city_muscat: "Muscat", 
+                price_disclaimer: "* Note: Prices above are global screen prices. Store prices may vary and include commissions.",
+                tips_title: "💡 Investor Tips", tip_1: "Use the 🧮 Commission Calculator in 'Tools' to find the exact markup added by the merchant.", tip_2: "Compare multiple stores to get the best bullion price.", dir: "ltr" 
+            },
+            "ur": { nav_home: "ہوم", nav_ledger: "لیجر", nav_tools: "ٹولز", nav_loc: "مقامات", nav_rep: "رپورٹس", loc_page_title: "مقامات 📍", country_label: "ملک", city_label: "شہر", store_list_title: "اسٹور کی فہرست", no_stores: "کوئی اسٹور نہیں ملا۔", call_btn: "کال کریں", map_btn: "نقشہ", specialist_badge: "خالص", country_saudi: "سعودی عرب", country_uae: "متحدہ عرب امارات", price_disclaimer: "قیمتوں میں کمیشن شامل ہو سکتا ہے۔", tips_title: "💡 تجاویز", tip_1: "کمیشن کیلکولیٹر استعمال کریں۔", tip_2: "بہترین قیمت کے لیے موازنہ کریں۔", dir: "rtl", updating: "اپ ڈیٹ...", updated: "اپ ڈیٹ:", update_btn: "اپ ڈیٹ کریں", ounce: "اونس", gram24: "گرام", q_kilo: "¼ کلو", h_kilo: "½ کلو", kilo: "کلو", tola: "تولہ" },
+            "hi": { nav_home: "होम", nav_ledger: "लेजर", nav_tools: "टूल्स", nav_loc: "स्थान", nav_rep: "रिपोर्ट", loc_page_title: "स्थान 📍", country_label: "देश", city_label: "शहर", store_list_title: "स्टोर सूची", no_stores: "कोई स्टोर नहीं मिला।", call_btn: "कॉल करें", map_btn: "नक्शा", specialist_badge: "बुलियन", country_saudi: "सऊदी अरब", country_uae: "यूएई", price_disclaimer: "मूल्य भिन्न हो सकते हैं और कमीशन शामिल हो सकता है।", tips_title: "💡 निवेश युक्तियाँ", tip_1: "कमीशन कैलकुलेटर का उपयोग करें।", tip_2: "दुकानों की तुलना करें।", dir: "ltr", updating: "अपडेट...", updated: "अपडेट:", update_btn: "अपडेट करें", ounce: "औंस", gram24: "ग्राम", q_kilo: "¼ किलो", h_kilo: "½ किलो", kilo: "किलो", tola: "तोला" },
+            "id": { nav_home: "Beranda", nav_ledger: "Buku", nav_tools: "Alat", nav_loc: "Lokasi", nav_rep: "Laporan", loc_page_title: "Lokasi 📍", country_label: "Negara", city_label: "Kota", store_list_title: "Daftar Toko", no_stores: "Tidak ada toko ditemukan.", call_btn: "Panggil", map_btn: "Peta", specialist_badge: "Emas Murni", country_saudi: "Arab Saudi", country_uae: "UEA", price_disclaimer: "Harga dapat bervariasi dan termasuk komisi toko.", tips_title: "💡 Tips Investor", tip_1: "Gunakan Kalkulator Komisi di Alat.", tip_2: "Bandingkan toko sebelum membeli.", dir: "ltr", updating: "Memperbarui...", updated: "Diperbarui:", update_btn: "Perbarui", ounce: "Ons", gram24: "Gram", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola" },
+            "tl": { nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Lokasyon", nav_rep: "Ulat", loc_page_title: "Lokasyon 📍", country_label: "Bansa", city_label: "Siyudad", store_list_title: "Tindahan", no_stores: "Walang tindahan.", call_btn: "Tawag", map_btn: "Mapa", specialist_badge: "Bullion", country_saudi: "Saudi Arabia", country_uae: "UAE", price_disclaimer: "Maaaring magbago ang presyo sa tindahan.", tips_title: "💡 Tips", tip_1: "Gamitin ang Calculator sa Tools.", tip_2: "Maghambing ng presyo sa iba't ibang tindahan.", dir: "ltr", updating: "Ina-update...", updated: "Na-update:", update_btn: "I-update", ounce: "Onsa", gram24: "Gramo", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola" },
+            "tr": { nav_home: "Ana Sayfa", nav_ledger: "Defter", nav_tools: "Araçlar", nav_loc: "Konumlar", nav_rep: "Raporlar", loc_page_title: "Konumlar 📍", country_label: "Ülke", city_label: "Şehir", store_list_title: "Liste", no_stores: "Mağaza yok.", call_btn: "Ara", map_btn: "Harita", specialist_badge: "Külçe", country_saudi: "Suudi Arabistan", country_uae: "BAE", price_disclaimer: "Fiyatlar mağazalarda değişiklik gösterebilir.", tips_title: "💡 İpuçları", tip_1: "Hesap Makinesini kullanın.", tip_2: "Fiyatları karşılaştırın.", dir: "ltr", updating: "Güncelleniyor...", updated: "Güncellendi:", update_btn: "Güncelle", ounce: "Ons", gram24: "Gram", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola" },
+            "fr": { nav_home: "Accueil", nav_ledger: "Registre", nav_tools: "Outils", nav_loc: "Lieux", nav_rep: "Rapports", loc_page_title: "Lieux 📍", country_label: "Pays", city_label: "Ville", store_list_title: "Liste", no_stores: "Aucun lieu.", call_btn: "Appel", map_btn: "Carte", specialist_badge: "Lingot", country_saudi: "Arabie Saoudite", country_uae: "Émirats", price_disclaimer: "Les prix peuvent varier en boutique.", tips_title: "💡 Conseils", tip_1: "Utilisez la calculatrice de commission.", tip_2: "Comparez les boutiques.", dir: "ltr", updating: "Mise à jour...", updated: "Mis à jour:", update_btn: "Mettre à jour", ounce: "Once", gram24: "Gramme", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola" },
+            "fa": { nav_home: "خانه", nav_ledger: "دفترچه", nav_tools: "ابزارها", nav_loc: "مکان‌ها", nav_rep: "گزارش‌ها", loc_page_title: "مکان‌ها 📍", country_label: "کشور", city_label: "شهر", store_list_title: "لیست", no_stores: "فروشگاهی نیست.", call_btn: "تماس", map_btn: "نقشه", specialist_badge: "شمش", country_saudi: "عربستان سعودی", country_uae: "امارات", price_disclaimer: "قیمت‌ها ممکن است در فروشگاه متفاوت باشد.", tips_title: "💡 نکات", tip_1: "از ماشین حساب استفاده کنید.", tip_2: "فروشگاه‌ها را مقایسه کنید.", dir: "rtl", updating: "در حال بروزرسانی...", updated: "بروزرسانی شد:", update_btn: "بروزرسانی", ounce: "اونس", gram24: "گرم", q_kilo: "¼ کیلو", h_kilo: "½ کیلو", kilo: "کیلو", tola: "تولا" },
+            "bn": { nav_home: "হোম", nav_ledger: "লেজার", nav_tools: "টুলস", nav_loc: "অবস্থান", nav_rep: "রিপোর্ট", loc_page_title: "অবস্থান 📍", country_label: "দেশ", city_label: "শহর", store_list_title: "তালিকা", no_stores: "দোকান নেই।", call_btn: "কল", map_btn: "ম্যাপ", specialist_badge: "বুলিয়ন", country_saudi: "সৌদি আরব", country_uae: "ইউএই", price_disclaimer: "দোকানের দাম ভিন্ন হতে পারে।", tips_title: "💡 টিপস", tip_1: "ক্যালকুলেটর ব্যবহার করুন।", tip_2: "দোকান তুলনা করুন।", dir: "ltr", updating: "আপডেট হচ্ছে...", updated: "আপডেট:", update_btn: "আপডেট", ounce: "আউন্স", gram24: "গ্রাম", q_kilo: "¼ কিলো", h_kilo: "½ কিলো", kilo: "কিলো", tola: "তোলা" }
+        };
+
+        // قاعدة بيانات المحلات الحقيقية للسبائك والذهب الاستثماري
+        const storesData = [
+            // السعودية - الرياض
+            { id: 1, name: "شركة سبك الذهب", name_en: "Sabk Al Dahab", country: "saudi", city: "riyadh", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سبك+الذهب+الرياض", isSpecialist: true, desc: "الشركة الرائدة في السبائك والذهب الصافي عيار 24.", desc_en: "Leading company in bullion and pure 24k gold." },
+            { id: 2, name: "كنز الصحراء للمجوهرات", name_en: "Desert Treasure", country: "saudi", city: "riyadh", phone: "", map: "https://www.google.com/maps/search/?api=1&query=كنز+الصحراء+الرياض", isSpecialist: true, desc: "وجهة المستثمرين الأولى للسبائك السويسرية والمحلية.", desc_en: "First destination for Swiss and local bullion." },
+            { id: 3, name: "ديوان الذهب", name_en: "Diwan Al Dahab", country: "saudi", city: "riyadh", phone: "", map: "https://www.google.com/maps/search/?api=1&query=ديوان+الذهب+الرياض", isSpecialist: true, desc: "متخصصون حصرياً في سبائك الذهب عيار 24 والجنيهات.", desc_en: "Exclusive specialists in 24k bullion and coins." },
+            { id: 4, name: "مجوهرات الرميزان - طيبة", name_en: "Al Romaizan - Taiba", country: "saudi", city: "riyadh", phone: "", map: "https://www.google.com/maps/search/?api=1&query=الرميزان+طيبة+الرياض", isSpecialist: true, desc: "تشكيلة واسعة وقسم مخصص للسبائك والاستثمار.", desc_en: "Wide variety and a dedicated bullion section." },
+            { id: 5, name: "شركة أصول للسبائك", name_en: "Osoul Bullion", country: "saudi", city: "riyadh", phone: "", map: "https://www.google.com/maps/search/?api=1&query=أصول+للسبائك+الرياض", isSpecialist: true, desc: "توفير سبائك بأوزان استثمارية تبدأ من جرام إلى كيلو.", desc_en: "Bullion weights from 1 gram to 1 kilo." },
+            // السعودية - جدة
+            { id: 6, name: "مصلي للسبائك والذهب", name_en: "Musalli Bullion", country: "saudi", city: "jeddah", phone: "", map: "https://www.google.com/maps/search/?api=1&query=مصلي+للذهب+جدة", isSpecialist: true, desc: "سوق الذهب المركزي، متخصصون في التولات والكيلوات.", desc_en: "Central market, specialists in Tolas and Kilos." },
+            { id: 7, name: "فرع السبائك - سالم الشعيبي", name_en: "Salem Al Shuaibi Bullion", country: "saudi", city: "jeddah", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سالم+الشعيبي+جدة", isSpecialist: true, desc: "قسم خاص للمستثمرين في الذهب الصافي والسبائك.", desc_en: "Special department for pure gold investors." },
+            { id: 8, name: "شركة سبائك ومسكوكات مكة", name_en: "Makkah Bullion", country: "saudi", city: "jeddah", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سبائك+ومسكوكات+مكة+جدة", isSpecialist: true, desc: "بيع وشراء السبائك والجنيهات المعتمدة.", desc_en: "Buying and selling certified bullion." },
+            // السعودية - الدمام
+            { id: 9, name: "سبائك الأربش", name_en: "Al Arbash Bullion", country: "saudi", city: "dammam", phone: "", map: "https://www.google.com/maps/search/?api=1&query=مجوهرات+الاربش+الدمام", isSpecialist: true, desc: "الاسم الأبرز في المنطقة الشرقية للذهب الاستثماري.", desc_en: "Top name in the Eastern Province for investment gold." },
+            { id: 10, name: "النمر للسبائك", name_en: "Al Nimer Bullion", country: "saudi", city: "dammam", phone: "", map: "https://www.google.com/maps/search/?api=1&query=النمر+للذهب+الدمام", isSpecialist: true, desc: "تجار جملة وسبائك سويسرية معتمدة (PAMP).", desc_en: "Wholesale and certified Swiss bullion (PAMP)." },
+            // السعودية - المدينة
+            { id: 11, name: "طيبة للسبائك والجنيهات", name_en: "Taiba Bullion", country: "saudi", city: "madinah", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سوق+الذهب+المدينة+المنورة", isSpecialist: true, desc: "وجهة متخصصة للذهب الاستثماري الخالص.", desc_en: "Specialized destination for pure investment gold." },
+            // الإمارات - دبي
+            { id: 12, name: "الإمارات للذهب", name_en: "Emirates Gold", country: "uae", city: "dubai", phone: "", map: "https://www.google.com/maps/search/?api=1&query=Emirates+Gold+Dubai", isSpecialist: true, desc: "أكبر مصفاة وتجار سبائك معتمدة عالمياً في المنطقة.", desc_en: "Largest certified refinery and bullion dealer." },
+            { id: 13, name: "الاتحاد للذهب", name_en: "Al Etihad Gold", country: "uae", city: "dubai", phone: "", map: "https://www.google.com/maps/search/?api=1&query=Al+Etihad+Gold+Dubai", isSpecialist: true, desc: "مصفاة وتجار ذهب استثماري وسبائك كيلوات.", desc_en: "Refinery and dealers of kilo bars." },
+            { id: 14, name: "بامب سويس دبي", name_en: "PAMP Suisse Dubai", country: "uae", city: "dubai", phone: "", map: "https://www.google.com/maps/search/?api=1&query=PAMP+Suisse+Dubai", isSpecialist: true, desc: "الموزع المعتمد لأشهر السبائك السويسرية في العالم.", desc_en: "Authorized distributor for Swiss PAMP bullion." },
+            // الإمارات - أبوظبي
+            { id: 15, name: "البطحاء للسبائك", name_en: "Al Batha Bullion", country: "uae", city: "abudhabi", phone: "", map: "https://www.google.com/maps/search/?api=1&query=Madinat+Zayed+Gold+Centre", isSpecialist: true, desc: "مركز مدينة زايد، تجارة الجملة والسبائك الاستثمارية.", desc_en: "Madinat Zayed, wholesale and bullion." },
+            // الأردن
+            { id: 16, name: "سبائك الأردن", name_en: "Jordan Bullion", country: "jordan", city: "amman", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سوق+الذهب+عمان+الاردن", isSpecialist: true, desc: "الوجهة الأولى للسبائك السويسرية والمحلية.", desc_en: "Top destination for Swiss and local bullion." },
+            { id: 17, name: "امسيح للذهب الاستثماري", name_en: "Imseeh Bullion", country: "jordan", city: "amman", phone: "", map: "https://www.google.com/maps/search/?api=1&query=مجوهرات+امسيح+عمان", isSpecialist: true, desc: "متخصصون في الليرات (الرشادية والإنجليزية).", desc_en: "Specialists in gold coins and ounces." },
+            { id: 18, name: "سكجها للسبائك", name_en: "Sakkijha Bullion", country: "jordan", city: "amman", phone: "", map: "https://www.google.com/maps/search/?api=1&query=مجوهرات+سكجها+عمان", isSpecialist: true, desc: "قسم خاص للذهب الخالص عيار 24 للاستثمار.", desc_en: "Special section for 24k investment gold." },
+            // الكويت
+            { id: 19, name: "شركة سبائك الكويت", name_en: "Sabaek Kuwait", country: "kuwait", city: "kuwait_city", phone: "", map: "https://www.google.com/maps/search/?api=1&query=شركة+سبائك+الكويت", isSpecialist: true, desc: "الشركة الأهم في سبائك 24 قيراط والذهب الاستثماري.", desc_en: "Top company for 24k bullion and investment." },
+            { id: 20, name: "دار السبائك", name_en: "Dar Al Sabaek", country: "kuwait", city: "kuwait_city", phone: "", map: "https://www.google.com/maps/search/?api=1&query=دار+السبائك+الكويت", isSpecialist: true, desc: "متخصصون في الأونصات والتولات والجنيهات.", desc_en: "Specialists in ounces, tolas, and coins." },
+            { id: 21, name: "الأربش للسبائك", name_en: "Al Arbash Bullion", country: "kuwait", city: "kuwait_city", phone: "", map: "https://www.google.com/maps/search/?api=1&query=الاربش+للمجوهرات+الكويت", isSpecialist: true, desc: "سوق المباركية، عراقة في توفير الذهب الخالص للادخار.", desc_en: "Mubarakiya market, heritage in pure gold." },
+            // عمان
+            { id: 22, name: "عُمان للسبائك", name_en: "Oman Bullion", country: "oman", city: "muscat", phone: "", map: "https://www.google.com/maps/search/?api=1&query=سوق+مطرح+للذهب", isSpecialist: true, desc: "المتجر المتخصص بالذهب الاستثماري في السلطنة.", desc_en: "Specialized store for investment gold." },
+            { id: 23, name: "تجار سبائك مطرح", name_en: "Mutrah Bullion Traders", country: "oman", city: "muscat", phone: "", map: "https://www.google.com/maps/search/?api=1&query=Mutrah+Gold+Souq", isSpecialist: true, desc: "سوق مطرح، تجار جملة متخصصون بعيار 24 والتولات.", desc_en: "Mutrah market, wholesale 24k and Tola dealers." }
+        ];
+
+        const citiesData = {
+            "saudi": [{ id: "riyadh", key: "city_riyadh" }, { id: "jeddah", key: "city_jeddah" }, { id: "dammam", key: "city_dammam" }, { id: "madinah", key: "city_madinah" }],
+            "uae": [{ id: "dubai", key: "city_dubai" }, { id: "abudhabi", key: "city_abudhabi" }],
+            "jordan": [{ id: "amman", key: "city_amman" }],
+            "kuwait": [{ id: "kuwait_city", key: "city_kuwait_city" }],
+            "oman": [{ id: "muscat", key: "city_muscat" }]
+        };
+
+        function applyGlobalTranslations() {
+            const t = translations[userSettings.lang] || translations['en'];
+            document.documentElement.dir = t.dir || 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) { if (el.tagName === 'INPUT') el.placeholder = t[key]; else el.innerText = t[key]; }
+            });
+            document.querySelectorAll('.curr-sym').forEach(e => e.innerText = userSettings.currSymbol);
+        }
+
+        async function fetchGoldPrices() {
+            const t = translations[userSettings.lang] || translations['ar'];
+            const updateBtn = document.getElementById('update-btn');
+            updateBtn.disabled = true; document.getElementById('last-update').innerText = t.updating || "Updating...";
+            try {
+                let response = await fetch("https://api.gold-api.com/price/XAU");
+                let data = await response.json(); let liveOunceUsd = data.price;
+                if(!liveOunceUsd || isNaN(liveOunceUsd)) throw new Error("Invalid");
+                let rate = parseFloat(userSettings.currRate) || 3.75;
+                let gramUsd = liveOunceUsd / OUNCE_IN_GRAMS;
+                
+                document.getElementById('ounce-usd').innerText = liveOunceUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('ounce-local').innerText = Math.round(liveOunceUsd * rate).toLocaleString('en-US');
+                document.getElementById('gram-usd').innerText = gramUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('gram-local').innerText = (gramUsd * rate).toFixed(2);
+                document.getElementById('q-kilo-usd').innerText = (gramUsd * 250).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('q-kilo-local').innerText = Math.round(gramUsd * 250 * rate).toLocaleString('en-US');
+                document.getElementById('h-kilo-usd').innerText = (gramUsd * 500).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('h-kilo-local').innerText = Math.round(gramUsd * 500 * rate).toLocaleString('en-US');
+                document.getElementById('kilo-usd').innerText = (gramUsd * 1000).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kilo-local').innerText = Math.round(gramUsd * 1000 * rate).toLocaleString('en-US');
+                document.getElementById('tola-usd').innerText = (gramUsd * TOLA_IN_GRAMS).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('tola-local').innerText = Math.round(gramUsd * TOLA_IN_GRAMS * rate).toLocaleString('en-US');
+                
+                let now = new Date(); document.getElementById('last-update').innerText = (t.updated || "") + now.toLocaleTimeString(userSettings.lang === 'en' ? 'en-US' : 'ar-SA', {hour: '2-digit', minute:'2-digit'});
+            } catch(e) { document.getElementById('last-update').innerText = t.failed || "Failed"; } finally { updateBtn.disabled = false; }
+        }
+
+        function updateCities() {
+            const t = translations[userSettings.lang] || translations['en'];
+            const countrySelect = document.getElementById('country-select').value; 
+            const citySelect = document.getElementById('city-select');
+            citySelect.innerHTML = '';
+            if (citiesData[countrySelect]) { 
+                citiesData[countrySelect].forEach(city => { 
+                    const option = document.createElement('option'); 
+                    option.value = city.id; 
+                    option.innerText = t[city.key] || city.id; 
+                    citySelect.appendChild(option); 
+                }); 
+            }
+            filterStores();
+        }
+
+        function filterStores() {
+            const t = translations[userSettings.lang] || translations['en'];
+            const selectedCountry = document.getElementById('country-select').value; 
+            const selectedCity = document.getElementById('city-select').value; 
+            const container = document.getElementById('stores-container');
+            container.innerHTML = ''; 
+            
+            const filteredStores = storesData.filter(store => store.country === selectedCountry && store.city === selectedCity);
+            document.getElementById('results-count').innerText = `${filteredStores.length}`;
+            
+            if(filteredStores.length === 0) { 
+                container.innerHTML = `<div style="text-align:center; color:var(--text-sub); padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border-color);">${t.no_stores || 'No stores found.'}</div>`; 
+                return; 
+            }
+            
+            filteredStores.forEach(store => {
+                const sName = (userSettings.lang !== 'ar' && store.name_en) ? store.name_en : store.name;
+                const sDesc = (userSettings.lang !== 'ar' && store.desc_en) ? store.desc_en : store.desc;
+                const badgeHtml = store.isSpecialist ? `<span class="inline-badge">${t.specialist_badge || 'Bullion'}</span>` : '';
+                
+                const card = document.createElement('div'); card.className = 'store-card';
+                card.innerHTML = `
+                    <div class="store-header">
+                        <h3 class="store-name">${sName} ${badgeHtml}</h3>
+                        <p class="store-desc">${sDesc}</p>
+                    </div>
+                    <div class="store-actions">
+                        ${store.phone ? `<a href="tel:${store.phone}" class="btn-action btn-call">${t.call_btn || 'Call'}</a>` : ''}
+                        <a href="${store.map}" target="_blank" class="btn-action btn-map">${t.map_btn || 'Map'}</a>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        // 1. دالة قراءة الثيم المحفوظ عند فتح الصفحة
+        function applySavedTheme() {
+            if (localStorage.getItem('gold_theme') === 'light') {
+                document.body.classList.add('light-theme');
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.innerText = '☀️';
+            }
+        }
+
+        // 2. دالة التبديل الجديدة (تحفظ الخيار في ذاكرة المتصفح)
+        function toggleTheme() { 
+            document.body.classList.toggle('light-theme'); 
+            const isLight = document.body.classList.contains('light-theme');
+            const icon = document.getElementById('theme-icon'); 
+            if(icon) icon.innerText = isLight ? '☀️' : '🌙'; 
+            localStorage.setItem('gold_theme', isLight ? 'light' : 'dark'); // هذا السطر هو الذي يحفظ الإعداد
+        }
+        
+        window.onload = () => { applySavedTheme(); applyGlobalTranslations(); fetchGoldPrices(); updateCities(); };
+    </script>
+</body>
+</html>

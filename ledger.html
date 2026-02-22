@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="ledger_title">الدفتر - جولد بلس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gold Plus">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --gold-accent: #D4AF37; --text-main: #FFFFFF; --text-sub: #A0A0A0; --nav-bg: #181818; --border-color: #333333; --buy-color: #2E7D32; --sell-color: #C62828; --modal-bg: rgba(0, 0, 0, 0.85); }
+        body.light-theme { --bg-color: #F5F7FA; --card-bg: #FFFFFF; --gold-accent: #B8860B; --text-main: #121212; --text-sub: #555555; --nav-bg: #FFFFFF; --border-color: #E5E5E5; --buy-color: #388E3C; --sell-color: #D32F2F; --modal-bg: rgba(255, 255, 255, 0.85); }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 15px 15px 80px 15px; transition: all 0.3s ease; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; } .app-title { color: var(--gold-accent); font-size: 20px; font-weight: 700; }
+        .controls { display: flex; gap: 8px; }
+        .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-family: 'Cairo'; font-weight: 600; }
+        .prices-header { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 20px; }
+        .update-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; }
+        .time-stamp { font-size: 11px; color: var(--text-sub); direction: ltr; } .update-btn { background-color: var(--gold-accent); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-family: 'Cairo'; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .mini-dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } .mini-price-card { text-align: center; border-left: 1px solid var(--border-color); padding: 5px 0; } .mini-price-card:nth-child(3n) { border-left: none; } .mini-price-card h3 { margin: 0 0 2px 0; font-size: 11px; color: var(--text-sub); } .mini-local-price { font-size: 13px; font-weight: 700; color: var(--gold-accent); margin: 0; direction: ltr;} .mini-usd-price { font-size: 10px; color: var(--text-sub); margin: 2px 0 0 0; direction: ltr;}
+        .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; } .summary-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; text-align: center; } .summary-card.full-width { grid-column: span 2; } .summary-card h4 { margin: 0 0 5px 0; font-size: 11px; color: var(--text-sub); } .summary-card p { margin: 0; font-size: 15px; font-weight: 700; color: var(--text-main); direction: ltr;} .highlight-gold { color: var(--gold-accent) !important; } .highlight-green { color: var(--buy-color) !important; font-weight: bold; }
+        .cash-box { background-color: rgba(212, 175, 55, 0.05); border: 1px solid var(--gold-accent); border-radius: 8px; padding: 12px; margin-bottom: 20px; } .cash-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed var(--gold-accent); padding-bottom: 8px; } .cash-box-title { margin: 0; font-size: 14px; font-weight: 700; color: var(--gold-accent); } .cash-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; } .cash-input { width: 100px; padding: 4px 8px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 4px; font-family: 'Cairo'; text-align: left; direction: ltr; }
+        .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text-main); } .transaction-list { display: flex; flex-direction: column; gap: 10px; } .tx-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border-right: 4px solid transparent; overflow: hidden; word-wrap: break-word;} .tx-card.buy { border-right-color: var(--buy-color); } .tx-card.sell { border-right-color: var(--sell-color); } .tx-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; } .tx-type { font-weight: 700; font-size: 13px; } .tx-card.buy .tx-type { color: var(--buy-color); } .tx-card.sell .tx-type { color: var(--sell-color); } .tx-date { font-size: 11px; color: var(--text-sub); direction: ltr;} .tx-body { display: flex; justify-content: space-between; align-items: center; } .tx-info h5 { margin: 0 0 3px 0; font-size: 14px; display: flex; gap: 5px; align-items: center;} .tx-info p { margin: 0; font-size: 12px; color: var(--text-sub); } .tx-price { font-size: 16px; font-weight: 700; color: var(--text-main); text-align: left; direction: ltr;} .tx-financials { display: flex; justify-content: space-between; font-size: 11px; margin-top: 5px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1); } body.light-theme .tx-financials { border-top-color: rgba(0,0,0,0.1); } .tx-fin-item { display: flex; flex-direction: column; gap: 2px; } .tx-fin-label { color: var(--text-sub); } .tx-fin-val { font-weight: 700; color: var(--text-main); direction: ltr;} .tx-actions { display: flex; gap: 8px; margin-top: 5px; } .action-btn { flex: 1; background: none; border: 1px solid var(--border-color); color: var(--text-main); padding: 6px; border-radius: 4px; font-size: 11px; font-family: 'Cairo'; font-weight: bold; cursor: pointer; }
+        .fab { position: fixed; bottom: 80px; left: 20px; background-color: var(--gold-accent); color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); cursor: pointer; z-index: 90; border: none; }
+        .bottom-nav { position: fixed; bottom: 0; right: 0; width: 100%; background-color: var(--nav-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; } .nav-item { text-align: center; color: var(--text-sub); font-size: 11px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none;} .nav-item.active { color: var(--gold-accent); } .nav-icon { font-size: 18px; display: block;}
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); z-index: 1000; justify-content: center; align-items: flex-end; } .modal-content { background-color: var(--bg-color); border-top: 2px solid var(--gold-accent); border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; box-sizing: border-box; } .form-group { margin-bottom: 12px; } .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-sub); font-weight: 600; } .form-control { width: 100%; padding: 10px; background-color: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; font-family: 'Cairo'; box-sizing: border-box; font-size: 14px; } .form-row { display: flex; gap: 10px; } .form-row .form-group { flex: 1; margin-bottom: 10px;} .payment-box { background-color: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 10px; } .add-payment-btn { background: none; border: 1px dashed var(--gold-accent); color: var(--gold-accent); width: 100%; padding: 8px; border-radius: 8px; font-family: 'Cairo'; cursor: pointer; margin-bottom: 12px; font-size: 12px; } .modal-actions { display: flex; gap: 10px; margin-top: 20px; } .btn-cancel { flex: 1; background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; font-size: 16px; font-family: 'Cairo'; cursor: pointer; } .btn-save { flex: 2; background-color: var(--gold-accent); color: #000; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 700; font-family: 'Cairo'; cursor: pointer; }
+        .highlight-box { border: 1px solid var(--sell-color) !important; background-color: rgba(198, 40, 40, 0.05) !important; }
+        .receipt-text-box { background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; font-size: 14px; line-height: 1.8; color: var(--text-main); white-space: pre-wrap; text-align: start; user-select: all; font-family: monospace, 'Cairo'; }
+        .karat-badge { background-color: rgba(212, 175, 55, 0.2); border: 1px solid var(--gold-accent); color: var(--gold-accent); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800;}
+        .backup-btn { flex: 1; padding: 12px; border-radius: 8px; font-family: 'Cairo'; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center;}
+        .b-json { background: rgba(46, 125, 50, 0.1); color: #4CAF50; border: 1px solid rgba(46,125,50,0.3); }
+        .b-csv { background: rgba(33, 150, 243, 0.1); color: #2196F3; border: 1px solid rgba(33,150,243,0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <div class="app-title" data-i18n="ledger_title">الدفتر 📓</div>
+            <div class="controls">
+                <button class="icon-btn" onclick="openSettingsModal()">⚙️</button>
+                <button class="icon-btn" onclick="openBackupModal()">💾</button>
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-icon">🌙</button>
+            </div>
+        </div>
+
+        <div class="prices-header">
+            <div class="update-bar">
+                <div class="time-stamp" id="last-update" data-i18n="updating">جاري التحديث...</div>
+                <button class="update-btn" id="update-btn" onclick="fetchGoldPrices()" data-i18n="update_btn">تحديث السعر</button>
+            </div>
+            <div class="mini-dashboard-grid">
+                <div class="mini-price-card"><h3 data-i18n="ounce">الأونصة</h3><p class="mini-local-price"><span id="ounce-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="ounce-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="gram24">الجرام (24)</h3><p class="mini-local-price"><span id="gram-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="gram-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="q_kilo">¼ كيلو</h3><p class="mini-local-price"><span id="q-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="q-kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="h_kilo">½ كيلو</h3><p class="mini-local-price"><span id="h-kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="h-kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="kilo">الكيلو</h3><p class="mini-local-price"><span id="kilo-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="kilo-usd">0</span> $</p></div>
+                <div class="mini-price-card"><h3 data-i18n="tola">التولة</h3><p class="mini-local-price"><span id="tola-local">0</span> <span class="curr-sym">SAR</span></p><p class="mini-usd-price"><span id="tola-usd">0</span> $</p></div>
+            </div>
+        </div>
+
+        <div class="cash-box">
+            <div class="cash-box-header"><h4 class="cash-box-title" data-i18n="cash_box">الصندوق (الكاش المتوفر)</h4></div>
+            <div class="cash-row"><span style="color: var(--text-sub);" data-i18n="invest_amount">مبلغ الاستثمار الكامل:</span><input type="number" class="cash-input" id="manual-capital" oninput="updateNetCashUI()"></div>
+            <div class="cash-row" style="color: var(--buy-color);"><span data-i18n="sales">+ مبالغ البيع:</span><span id="total-sales" style="direction: ltr;">0 <span class="curr-sym">SAR</span></span></div>
+            <div class="cash-row" style="color: var(--sell-color);"><span data-i18n="purchases">- مبالغ الشراء:</span><span id="total-purchases" style="direction: ltr;">0 <span class="curr-sym">SAR</span></span></div>
+            <div class="cash-row" style="margin-top: 10px; border-top: 1px solid rgba(212,175,55,0.3); padding-top: 8px;"><span style="font-weight: 700; color: var(--gold-accent);" data-i18n="net_cash">المجموع المتوفر:</span><span style="font-weight: 700; font-size: 16px; color: var(--gold-accent); direction: ltr;" id="net-cash">0 <span class="curr-sym">SAR</span></span></div>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-card full-width"><h4 data-i18n="sum_cost">تكلفة الذهب المتوفر</h4><p class="highlight-gold" id="sum-cost">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="summary-card"><h4 data-i18n="sum_avg">متوسط سعر الشراء</h4><p id="sum-avg">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="summary-card"><h4 data-i18n="sum_weight">الوزن الإجمالي</h4><p id="sum-weight">0</p></div>
+            <div class="summary-card"><h4 data-i18n="sum_realized">الربح المحقق</h4><p class="highlight-green" id="sum-realized">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="summary-card"><h4 data-i18n="sum_unrealized">الربح غير المحقق</h4><p class="highlight-green" id="sum-unrealized">0 <span class="curr-sym">SAR</span></p></div>
+        </div>
+
+        <div class="section-title" data-i18n="tx_history">سجل العمليات</div>
+        <div class="transaction-list" id="transactions-container"></div>
+    </div>
+
+    <button class="fab" onclick="openModal()">+</button>
+
+    <div class="bottom-nav">
+        <a href="HomePage.html" class="nav-item"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
+        <a href="ledger.html" class="nav-item active"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
+        <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
+        <a href="locations.html" class="nav-item"><span class="nav-icon">📍</span><span data-i18n="nav_loc">المواقع</span></a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📊</span><span data-i18n="nav_rep">التقارير</span></a>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between;">
+                <h3 class="modal-title" style="color: var(--gold-accent); margin:0;">الإعدادات ⚙️</h3>
+                <button onclick="closeSettingsModal()" style="background:none; border:none; color:var(--text-sub); font-size:20px; cursor:pointer;">✖</button>
+            </div>
+            <div class="form-group">
+                <label>رمز العملة المحلية (مثال: SAR)</label>
+                <input type="text" id="set-currency" class="form-control" value="SAR">
+            </div>
+            <div class="form-group">
+                <label>سعر الصرف (كم تساوي العملة مقابل 1 دولار؟)</label>
+                <input type="number" id="set-rate" class="form-control" value="3.75" step="0.01">
+            </div>
+            <div class="form-group">
+                <label style="color: var(--gold-accent);">تثبيت سعر الشاشة العالمي للأونصة ($)</label>
+                <p style="font-size: 11px; margin-top:-3px; color:var(--text-sub);">اترك الحقل فارغاً لتحديث السعر تلقائياً من الإنترنت.</p>
+                <input type="number" id="set-manual-price" class="form-control" placeholder="مثال: 2050">
+            </div>
+            <button class="btn-save" style="width: 100%; margin-top: 10px;" onclick="saveSettings()">حفظ وتحديث ✔️</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="backup-modal">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 class="modal-title" style="color: var(--gold-accent); margin: 0;" data-i18n="backup_title">النسخ الاحتياطي 💾</h3>
+                <button onclick="closeBackupModal()" style="background:none; border:none; color:var(--text-sub); font-size:20px; cursor:pointer;">✖</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 20px; text-align: center;" data-i18n="backup_desc">حفظ بياناتك بأمان ونقلها بين أجهزتك أو تصديرها كملف إكسيل.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="backup-btn b-json" onclick="exportJSON()">
+                    <span style="font-size: 20px;">📤</span><span data-i18n="export_json">تصدير (نسخة احتياطية)</span>
+                </button>
+                <label class="backup-btn b-json" style="cursor: pointer;">
+                    <span style="font-size: 20px;">📥</span><span data-i18n="import_json">استيراد (نسخة احتياطية)</span>
+                    <input type="file" accept=".json,application/json,text/plain,*/*" style="display: none;" onchange="importJSON(event)">
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="backup-btn b-csv" onclick="exportCSV()">
+                    <span style="font-size: 20px;">📊</span><span data-i18n="export_csv">تصدير (إكسيل CSV)</span>
+                </button>
+                <label class="backup-btn b-csv" style="cursor: pointer;">
+                    <span style="font-size: 20px;">📋</span><span data-i18n="import_csv">استيراد (إكسيل CSV)</span>
+                    <input type="file" accept=".csv,text/csv,application/vnd.ms-excel,*/*" style="display: none;" onchange="importCSV(event)">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="tx-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title" data-i18n="add_tx">تسجيل عملية</h3>
+                <select id="tx-type" class="form-control" style="width: auto; padding: 5px; font-size: 12px; font-weight: bold;" onchange="updateModalType()">
+                    <option value="buy" data-i18n="tx_buy">🟢 شراء</option>
+                    <option value="sell" data-i18n="tx_sell">🔴 بيع</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label data-i18n="date_label">التاريخ الفعلي</label><input type="date" id="tx-date" class="form-control"></div>
+                <div class="form-group"><label data-i18n="store_label">اسم المحل</label><input type="text" id="tx-store" class="form-control" data-i18n="store_ph"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;"><label data-i18n="serial_label">الرقم التسلسلي</label><input type="text" id="tx-serial" class="form-control" data-i18n="serial_ph"></div>
+                <div class="form-group" style="flex: 1;"><label data-i18n="purity_label">العيار</label>
+                    <select id="tx-purity" class="form-control" onchange="handleTxPurityChange()">
+                        <option value="24" data-i18n="k24">24K</option>
+                        <option value="22" data-i18n="k22">22K</option>
+                        <option value="21" data-i18n="k21">21K</option>
+                        <option value="18" data-i18n="k18">18K</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;"><label data-i18n="weight_label">الوزن</label><input type="number" id="tx-weight" class="form-control"></div>
+                <div class="form-group" style="flex: 1;"><label data-i18n="unit_label">الوحدة</label>
+                    <select id="tx-unit" class="form-control">
+                        <option value="gram" data-i18n="unit_gram">جرام</option>
+                        <option value="ounce" data-i18n="unit_ounce">أونصة</option>
+                        <option value="tola" data-i18n="unit_tola">تولة</option>
+                        <option value="kilo" data-i18n="unit_kilo">كيلو</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label data-i18n="screen_price_label">سعر الشاشة ($)</label><input type="number" id="tx-screen-price" class="form-control"></div>
+                <div class="form-group"><label id="total-price-label" data-i18n="total_price_label">السعر الإجمالي</label><input type="number" id="tx-total-price" class="form-control"></div>
+            </div>
+            <div class="form-group" id="original-price-group" style="display: none;">
+                <label style="color: var(--sell-color);" data-i18n="orig_price_label">سعر الشراء الأصلي</label>
+                <input type="number" id="tx-original-price" class="form-control highlight-box" data-i18n="orig_price_ph">
+            </div>
+            <label style="font-size: 12px; font-weight: 600; display: block;" data-i18n="payment_methods">طرق الدفع</label>
+            <div id="payment-methods-container"></div>
+            <button class="add-payment-btn" onclick="addPaymentBox()" data-i18n="add_pay_btn">+ إضافة طريقة دفع</button>
+            <div class="form-group"><label data-i18n="notes_label">ملاحظات</label><textarea id="tx-notes" class="form-control" rows="2" data-i18n="notes_ph"></textarea></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()" data-i18n="cancel_btn">إلغاء</button>
+                <button class="btn-save" id="save-btn" onclick="saveTransaction()" data-i18n="save_btn">حفظ ✔️</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="share-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: var(--gold-accent);" data-i18n="share">تفاصيل العملية</h3>
+                <button onclick="closeShareModal()" style="background:none; border:none; color:var(--text-sub); font-size:20px; cursor:pointer;">✖</button>
+            </div>
+            <div class="receipt-text-box" id="share-text-content"></div>
+            <button class="btn-save" style="margin-top: 15px; width: 100%; background-color: var(--buy-color); color: white;" onclick="copyShareText()" data-i18n="copy_btn">نسخ 📋</button>
+        </div>
+    </div>
+
+    <script>
+        const OUNCE_IN_GRAMS = 31.1034768; const TOLA_IN_GRAMS = 11.6638038;
+        let userSettings = JSON.parse(localStorage.getItem('gold_settings')) || { lang: 'ar', currSymbol: 'SAR', currRate: 3.75 };
+        let globalGramPriceLocal = 0; let editingTxId = null;
+
+        window.currentTotalPurchases = 0; window.currentTotalSales = 0;
+
+        const translations = {
+            "ar": { app_title: "جولد بلس ✨", ledger_title: "الدفتر 📓", nav_home: "الرئيسية", nav_ledger: "الدفتر", nav_tools: "الأدوات", nav_loc: "المواقع", nav_rep: "التقارير", updating: "جاري التحديث...", updated: "تم التحديث: ", failed: "فشل التحديث", update_btn: "تحديث السعر", ounce: "الأونصة", gram24: "الجرام (24)", q_kilo: "¼ كيلو", h_kilo: "½ كيلو", kilo: "الكيلو", tola: "التولة", cash_box: "الصندوق (الكاش المتوفر)", invest_amount: "مبلغ الاستثمار الكامل:", sales: "+ مبالغ البيع:", purchases: "- مبالغ الشراء:", net_cash: "المجموع المتوفر:", sum_cost: "تكلفة الذهب المتوفر", sum_avg: "متوسط سعر الشراء", sum_weight: "الوزن الإجمالي", sum_realized: "الربح المحقق", sum_unrealized: "الربح غير المحقق", calc_pending: "جاري الحساب...", tx_history: "سجل العمليات", add_tx: "تسجيل عملية", tx_buy: "🟢 شراء", tx_sell: "🔴 بيع", date_label: "التاريخ الفعلي", store_label: "اسم المحل", store_ph: "مثال: ديوان الذهب", serial_label: "الرقم التسلسلي", serial_ph: "مثال: B050C052", purity_label: "العيار", k24: "24K", k22: "22K (جنيه إنجليزي)", k21: "21K (رشادي/مشغولات)", k18: "18K", weight_label: "الوزن", unit_label: "الوحدة", unit_gram: "جرام", unit_gram_short: "g", unit_ounce: "أونصة", unit_tola: "تولة", unit_kilo: "كيلو", screen_price_label: "سعر الشاشة ($)", total_price_label: "السعر الإجمالي", orig_price_label: "سعر الشراء الأصلي", orig_price_ph: "السعر القديم", payment_methods: "طرق الدفع", add_pay_btn: "+ إضافة طريقة دفع", pay_cash: "كاش", pay_card: "شبكة", pay_transfer: "تحويل", pay_other: "أخرى", pay_custom_ph: "اكتب الطريقة...", pay_amount_ph: "المبلغ", notes_label: "ملاحظات", notes_ph: "اكتب ملاحظات...", cancel_btn: "إلغاء", save_btn: "حفظ ✔️", copy_btn: "نسخ 📋", confirm_del: "هل أنت متأكد من الحذف؟", fill_required: "الرجاء إدخال الوزن والسعر الإجمالي!", edit: "تعديل ✏️", del: "حذف 🗑️", share: "تفاصيل 📤", comm_paid: "العمولة المدفوعة:", copy_success: "تم النسخ بنجاح!", backup_title: "النسخ الاحتياطي 💾", backup_desc: "حفظ بياناتك بأمان ونقلها بين أجهزتك أو تصديرها كملف إكسيل.", export_json: "تصدير (نسخة احتياطية)", import_json: "استيراد (نسخة احتياطية)", export_csv: "تصدير (إكسيل CSV)", import_csv: "استيراد (إكسيل CSV)", dir: "rtl", rec_today: "اليوم", rec_done: "تم", rec_buy: "شراء", rec_sell: "بيع", rec_from: "من", rec_buy_price: "سعر الشراء", rec_sell_price: "سعر البيع", rec_eq: "ما يعادل", rec_comm: "العمولة", rec_comm_usd: "العمولة بالدولار", rec_global_oz: "السعر العالمي للأونصة", rec_store_oz_buy: "سعر الأونصة حسب الشراء", rec_store_oz_sell: "سعر الأونصة حسب البيع", rec_diff: "الفرق بكل أونصة", rec_pay: "طريقة الدفع:" },
+            "en": { app_title: "Gold Plus ✨", ledger_title: "Ledger 📓", nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Locations", nav_rep: "Reports", updating: "Updating...", updated: "Updated: ", failed: "Update Failed", update_btn: "Update Price", ounce: "Ounce", gram24: "Gram (24)", q_kilo: "¼ Kilo", h_kilo: "½ Kilo", kilo: "Kilo", tola: "Tola", cash_box: "Cash Box", invest_amount: "Total Investment:", sales: "+ Total Sales:", purchases: "- Total Purchases:", net_cash: "Total Available:", sum_cost: "Total Gold Cost", sum_avg: "Avg. Purchase Price", sum_weight: "Total Weight", sum_realized: "Realized Profit", sum_unrealized: "Unrealized Profit", calc_pending: "Calculating...", tx_history: "Transaction History", add_tx: "Add Transaction", tx_buy: "🟢 Buy", tx_sell: "🔴 Sell", date_label: "Date", store_label: "Store Name", store_ph: "e.g., Gold Shop", serial_label: "Serial No.", serial_ph: "e.g., B050C052", purity_label: "Karat", k24: "24K", k22: "22K", k21: "21K", k18: "18K", weight_label: "Weight", unit_label: "Unit", unit_gram: "Gram", unit_gram_short: "g", unit_ounce: "Ounce", unit_tola: "Tola", unit_kilo: "Kilo", screen_price_label: "Screen Price ($)", total_price_label: "Total Price", orig_price_label: "Original Buy Price", orig_price_ph: "Old price", payment_methods: "Payment Methods", add_pay_btn: "+ Add Method", pay_cash: "Cash", pay_card: "Card", pay_transfer: "Transfer", pay_other: "Other", pay_custom_ph: "Method...", pay_amount_ph: "Amount", notes_label: "Notes", notes_ph: "Type notes...", cancel_btn: "Cancel", save_btn: "Save ✔️", copy_btn: "Copy 📋", confirm_del: "Are you sure to delete?", fill_required: "Please enter weight and total price!", edit: "Edit ✏️", del: "Delete 🗑️", share: "Share 📤", comm_paid: "Commission:", copy_success: "Copied!", backup_title: "Backup & Restore 💾", backup_desc: "Save or restore your data, or export to Excel.", export_json: "Export (Backup JSON)", import_json: "Import (Backup JSON)", export_csv: "Export (Excel CSV)", import_csv: "Import (Excel CSV)", dir: "ltr", rec_today: "Date:", rec_done: "Action:", rec_buy: "Bought", rec_sell: "Sold", rec_from: "from", rec_buy_price: "Buy Price:", rec_sell_price: "Sell Price:", rec_eq: "equals", rec_comm: "Commission", rec_comm_usd: "Comm. in USD", rec_global_oz: "Global Ounce Price:", rec_store_oz_buy: "Store Ounce (Buy):", rec_store_oz_sell: "Store Ounce (Sell):", rec_diff: "Diff per Ounce:", rec_pay: "Payment Method:" }
+        };
+
+        function applySavedTheme() {
+            if (localStorage.getItem('gold_theme') === 'light') { document.body.classList.add('light-theme'); const icon = document.getElementById('theme-icon'); if(icon) icon.innerText = '☀️'; }
+        }
+
+        function toggleTheme() { 
+            document.body.classList.toggle('light-theme'); 
+            const isLight = document.body.classList.contains('light-theme');
+            const icon = document.getElementById('theme-icon'); if(icon) icon.innerText = isLight ? '☀️' : '🌙'; 
+            localStorage.setItem('gold_theme', isLight ? 'light' : 'dark');
+        }
+
+        function applyGlobalTranslations() {
+            const t = translations[userSettings.lang] || translations['en'];
+            document.documentElement.dir = t.dir || 'ltr';
+            document.getElementById('share-text-content').style.textAlign = t.dir === 'rtl' ? 'right' : 'left'; 
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) { if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t[key]; else el.innerText = t[key]; }
+            });
+            document.querySelectorAll('.curr-sym').forEach(e => e.innerText = userSettings.currSymbol);
+        }
+
+        // --- دوال الإعدادات السحرية لمعالجة خطأ الأسعار والصرف ---
+        function openSettingsModal() {
+            document.getElementById('set-currency').value = userSettings.currSymbol || 'SAR';
+            document.getElementById('set-rate').value = userSettings.currRate || 3.75;
+            document.getElementById('set-manual-price').value = localStorage.getItem('manual_gold_price') || '';
+            document.getElementById('settings-modal').style.display = 'flex';
+        }
+        function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+        function saveSettings() {
+            let sym = document.getElementById('set-currency').value.toUpperCase() || 'SAR';
+            let rate = parseFloat(document.getElementById('set-rate').value) || 3.75;
+            let manualP = parseFloat(document.getElementById('set-manual-price').value) || 0;
+
+            userSettings = { lang: userSettings.lang || 'ar', currSymbol: sym, currRate: rate };
+            localStorage.setItem('gold_settings', JSON.stringify(userSettings));
+            
+            if(manualP > 0) localStorage.setItem('manual_gold_price', manualP);
+            else localStorage.removeItem('manual_gold_price');
+
+            applyGlobalTranslations();
+            fetchGoldPrices(); // سيعيد حساب كل الشاشة بناءً على التحديثات
+            closeSettingsModal();
+        }
+
+        async function fetchGoldPrices() {
+            const t = translations[userSettings.lang] || translations['ar'];
+            const updateBtn = document.getElementById('update-btn');
+            updateBtn.disabled = true; document.getElementById('last-update').innerText = t.updating || "جاري التحديث...";
+            
+            let manualP = parseFloat(localStorage.getItem('manual_gold_price')) || 0;
+            let liveOunceUsd = 0;
+
+            // إذا أدخلت سعر شاشة يدوي في الإعدادات، سيستخدمه ويتجاهل الإنترنت
+            if(manualP > 0) {
+                liveOunceUsd = manualP;
+                document.getElementById('last-update').innerText = "سعر الشاشة (مثبت يدوياً)";
+            } else {
+                try {
+                    let response = await fetch("https://api.gold-api.com/price/XAU");
+                    let data = await response.json(); liveOunceUsd = data.price;
+                    if(!liveOunceUsd || isNaN(liveOunceUsd)) throw new Error("Invalid");
+                    let now = new Date(); document.getElementById('last-update').innerText = (t.updated || "") + now.toLocaleTimeString(userSettings.lang === 'en' ? 'en-US' : 'ar-SA', {hour: '2-digit', minute:'2-digit'});
+                } catch(e) { 
+                    liveOunceUsd = 2050.50; // سعر افتراضي في حال انهيار الـ API
+                    document.getElementById('last-update').innerText = "فشل الاتصال (سعر افتراضي)"; 
+                }
+            }
+
+            let rate = parseFloat(userSettings.currRate) || 3.75;
+            globalGramPriceLocal = (liveOunceUsd / OUNCE_IN_GRAMS) * rate;
+            let gramUsd = liveOunceUsd / OUNCE_IN_GRAMS;
+            
+            document.getElementById('ounce-usd').innerText = liveOunceUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('ounce-local').innerText = Math.round(liveOunceUsd * rate).toLocaleString('en-US');
+            document.getElementById('gram-usd').innerText = gramUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('gram-local').innerText = globalGramPriceLocal.toFixed(2);
+            document.getElementById('q-kilo-usd').innerText = (gramUsd * 250).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('q-kilo-local').innerText = Math.round(gramUsd * 250 * rate).toLocaleString('en-US');
+            document.getElementById('h-kilo-usd').innerText = (gramUsd * 500).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('h-kilo-local').innerText = Math.round(gramUsd * 500 * rate).toLocaleString('en-US');
+            document.getElementById('kilo-usd').innerText = (gramUsd * 1000).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('kilo-local').innerText = Math.round(globalGramPriceLocal * 1000).toLocaleString('en-US');
+            document.getElementById('tola-usd').innerText = (gramUsd * TOLA_IN_GRAMS).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('tola-local').innerText = Math.round(gramUsd * TOLA_IN_GRAMS * rate).toLocaleString('en-US');
+            
+            renderTransactions(); 
+            updateBtn.disabled = false;
+        }
+
+        // دالة تنظيف الملفات المعطوبة (تجاهل رموز الإكسيل الغريبة)
+        function getTransactions() { 
+            try {
+                let raw = localStorage.getItem('gold_transactions');
+                if(!raw) return [];
+                let txs = JSON.parse(raw);
+                let origLen = txs.length;
+                txs = txs.filter(tx => {
+                    let s = JSON.stringify(tx);
+                    return !(s.includes('workbook.xml') || s.includes('PK\u0003'));
+                });
+                if(origLen !== txs.length) { localStorage.setItem('gold_transactions', JSON.stringify(txs)); }
+                return txs;
+            } catch(e) { return []; }
+        }
+        
+        function updateNetCashUI() {
+            let capStr = document.getElementById('manual-capital').value;
+            localStorage.setItem('gold_capital', capStr); 
+            let cap = capStr !== "" ? parseFloat(capStr) : 0;
+            let sym = userSettings.currSymbol;
+            let netCash = cap + window.currentTotalSales - window.currentTotalPurchases;
+            let netCashEl = document.getElementById('net-cash'); 
+            netCashEl.innerHTML = `${Math.round(netCash).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; 
+            netCashEl.style.color = netCash < 0 ? 'var(--sell-color)' : 'var(--gold-accent)';
+        }
+        
+        function deleteTransaction(id) { 
+            const t = translations[userSettings.lang] || translations['en']; 
+            if (confirm(t.confirm_del || "Delete?")) { 
+                let txs = getTransactions().filter(item => String(item.id) !== String(id)); 
+                localStorage.setItem('gold_transactions', JSON.stringify(txs)); renderTransactions(); 
+            } 
+        }
+
+        function addPaymentBox(method = 'cash', amount = '') {
+            const t = translations[userSettings.lang] || translations['en'];
+            const container = document.getElementById('payment-methods-container');
+            const newBox = document.createElement('div'); newBox.className = 'payment-box';
+            let customStyle = method !== 'cash' && method !== 'card' && method !== 'transfer' ? 'block' : 'none';
+            let selectVal = customStyle === 'block' ? 'other' : method; let customVal = customStyle === 'block' ? method : '';
+            newBox.innerHTML = `
+                <select class="form-control payment-select" onchange="checkCustomPayment(this)">
+                    <option value="cash" ${selectVal === 'cash' ? 'selected' : ''}>${t.pay_cash || 'Cash'}</option>
+                    <option value="card" ${selectVal === 'card' ? 'selected' : ''}>${t.pay_card || 'Card'}</option>
+                    <option value="transfer" ${selectVal === 'transfer' ? 'selected' : ''}>${t.pay_transfer || 'Transfer'}</option>
+                    <option value="other" ${selectVal === 'other' ? 'selected' : ''}>${t.pay_other || 'Other'}</option>
+                </select>
+                <input type="text" class="form-control custom-payment-input" value="${customVal}" placeholder="${t.pay_custom_ph || 'Method...'}" style="display: ${customStyle}; margin-top: 10px;">
+                <input type="number" class="form-control payment-amount" value="${amount}" placeholder="${t.pay_amount_ph || 'Amount'}" style="margin-top: 10px;">
+            `;
+            container.appendChild(newBox);
+        }
+        function checkCustomPayment(selectElement) { const customInput = selectElement.nextElementSibling; customInput.style.display = selectElement.value === 'other' ? 'block' : 'none'; }
+
+        function handleTxPurityChange() {
+            const purity = document.getElementById('tx-purity').value;
+            const weightInput = document.getElementById('tx-weight');
+            const unitSelect = document.getElementById('tx-unit');
+            if (purity === '22') { weightInput.value = 8; unitSelect.value = 'gram'; } 
+            else if (purity === '21') { weightInput.value = 7.2; unitSelect.value = 'gram'; }
+        }
+
+        function editTransaction(id) {
+            const t = translations[userSettings.lang] || translations['en'];
+            const tx = getTransactions().find(item => String(item.id) === String(id)); if(!tx) return; editingTxId = tx.id; 
+            document.getElementById('tx-type').value = tx.type; document.getElementById('tx-date').value = tx.date; document.getElementById('tx-store').value = tx.store; document.getElementById('tx-serial').value = tx.serial || ""; document.getElementById('tx-purity').value = tx.purity || "24"; document.getElementById('tx-weight').value = tx.weight; document.getElementById('tx-unit').value = tx.unit || "gram"; document.getElementById('tx-screen-price').value = tx.screenPriceUsd; document.getElementById('tx-total-price').value = tx.totalPrice; document.getElementById('tx-original-price').value = tx.originalPrice || ""; document.getElementById('tx-notes').value = tx.notes || "";
+            document.getElementById('payment-methods-container').innerHTML = '';
+            if (tx.payments && tx.payments.length > 0) { tx.payments.forEach(p => addPaymentBox(p.method, p.amount)); } else { addPaymentBox(); }
+            updateModalType(); document.getElementById('save-btn').innerText = (t.edit || 'Edit') + " 🔄"; document.getElementById('tx-modal').style.display = 'flex';
+        }
+
+        function saveTransaction() {
+            const t = translations[userSettings.lang] || translations['en'];
+            const type = document.getElementById('tx-type').value; const date = document.getElementById('tx-date').value || new Date().toISOString().split('T')[0]; const store = document.getElementById('tx-store').value || "Store"; const serial = document.getElementById('tx-serial').value || ""; const weight = parseFloat(document.getElementById('tx-weight').value) || 0; const unit = document.getElementById('tx-unit').value; const purity = parseFloat(document.getElementById('tx-purity').value) || 24; const screenPriceUsd = parseFloat(document.getElementById('tx-screen-price').value) || 2050.50; const totalPrice = parseFloat(document.getElementById('tx-total-price').value) || 0; const originalPrice = parseFloat(document.getElementById('tx-original-price').value) || 0; const notes = document.getElementById('tx-notes').value || "";
+            
+            if (weight === 0 || isNaN(weight) || totalPrice === 0 || isNaN(totalPrice)) { alert(t.fill_required || "Please enter weight and total price!"); return; }
+            
+            let payments = []; document.querySelectorAll('.payment-box').forEach(box => { let method = box.querySelector('.payment-select').value; if(method === 'other') method = box.querySelector('.custom-payment-input').value || 'Other'; else if(method === 'cash') method = 'cash'; else if(method === 'card') method = 'card'; else if(method === 'transfer') method = 'transfer'; let amt = parseFloat(box.querySelector('.payment-amount').value) || 0; if(amt > 0) payments.push({method, amount: amt}); });
+            let weightInGrams = weight; if(unit === 'ounce') weightInGrams *= OUNCE_IN_GRAMS; if(unit === 'tola') weightInGrams *= TOLA_IN_GRAMS; if(unit === 'kilo') weightInGrams *= 1000;
+            
+            let rate = parseFloat(userSettings.currRate) || 3.75; 
+            const fairPrice = (screenPriceUsd / OUNCE_IN_GRAMS) * weightInGrams * rate * (purity / 24);
+            let commission = type === 'buy' ? totalPrice - fairPrice : fairPrice - totalPrice; let profit = type === 'sell' ? totalPrice - originalPrice : 0;
+            
+            const newTx = { id: editingTxId ? editingTxId : Date.now(), type, date, store, serial, weight: weightInGrams, unit, purity, screenPriceUsd, totalPrice, originalPrice, notes, commission, profit, payments };
+            let txs = getTransactions(); if (editingTxId) { const index = txs.findIndex(item => String(item.id) === String(editingTxId)); if(index !== -1) txs[index] = newTx; } else { txs.unshift(newTx); }
+            localStorage.setItem('gold_transactions', JSON.stringify(txs)); closeModal(); renderTransactions();
+        }
+
+        function shareReceipt(id) {
+            const t = translations[userSettings.lang] || translations['en'];
+            const tx = getTransactions().find(item => String(item.id) === String(id)); if(!tx) return;
+            const d = new Date(tx.date); const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const dateStr = `${days[d.getUTCDay()]} ${d.getUTCDate().toString().padStart(2, '0')}, ${months[d.getUTCMonth()]}, ${d.getUTCFullYear()}`;
+            const actionWord = tx.type === 'buy' ? (t.rec_buy || 'Bought') : (t.rec_sell || 'Sold');
+            const priceWord = tx.type === 'buy' ? (t.rec_buy_price || 'Buy Price') : (t.rec_sell_price || 'Sell Price');
+            const storeOzWord = tx.type === 'buy' ? (t.rec_store_oz_buy || 'Store Ounce (Buy)') : (t.rec_store_oz_sell || 'Store Ounce (Sell)');
+            
+            let rate = parseFloat(userSettings.currRate) || 3.75; let sym = userSettings.currSymbol;
+            const usdTotal = tx.totalPrice / rate; 
+            const usdComm = Math.abs(tx.commission) / rate; 
+            const ounceStoreUsd = (tx.totalPrice / tx.weight) * OUNCE_IN_GRAMS / rate; 
+            const diffOunce = usdComm / (tx.weight / OUNCE_IN_GRAMS);
+            
+            let payStr = tx.payments && tx.payments.length > 0 ? tx.payments.map(p => {
+                let pName = p.method; if(p.method==='cash') pName = t.pay_cash || 'Cash'; if(p.method==='card') pName = t.pay_card || 'Card'; if(p.method==='transfer') pName = t.pay_transfer || 'Transfer';
+                return `${pName.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, '').trim()} (${Math.round(p.amount).toLocaleString('en-US')})`; 
+            }).join(' ') : `${(t.pay_cash || 'Cash').replace(/[^a-zA-Z\u0600-\u06FF\s]/g, '').trim()} (${Math.round(tx.totalPrice).toLocaleString('en-US')})`;
+
+            const receiptText = `${t.rec_today || 'Date:'} ${dateStr}\n\n` +
+                 `${t.rec_done || 'Action:'} ${actionWord} ${parseFloat(tx.weight).toFixed(2)}${t.unit_gram_short || 'g'} (${tx.purity||24}K) ${t.rec_from || 'from'} ${tx.store}\n` +
+                 `${priceWord} ${Math.round(tx.totalPrice).toLocaleString('en-US')} ${sym} ${t.rec_eq || 'equals'} ${Math.round(usdTotal).toLocaleString('en-US')} USD\n\n` +
+                 `${t.rec_comm || 'Commission:'} ${Math.round(Math.abs(tx.commission)).toLocaleString('en-US')} ${sym} / ${t.rec_comm_usd || 'Comm. in USD:'} ${Math.round(usdComm).toLocaleString('en-US')} USD\n\n` +
+                 `${t.rec_global_oz || 'Global Ounce Price:'} ${Math.round(tx.screenPriceUsd).toLocaleString('en-US')} USD\n` +
+                 `${storeOzWord} ${Math.round(ounceStoreUsd).toLocaleString('en-US')} USD\n` +
+                 `${t.rec_diff || 'Diff per Ounce:'} ${Math.round(diffOunce).toLocaleString('en-US')} USD\n\n` +
+                 `${t.rec_pay || 'Payment Method:'} ${payStr}`;
+
+            document.getElementById('share-text-content').innerText = receiptText;
+            document.getElementById('share-modal').style.display = 'flex';
+        }
+
+        function copyShareText() {
+            const text = document.getElementById('share-text-content').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const t = translations[userSettings.lang] || translations['ar'];
+                alert(t.copy_success || 'Copied successfully!'); closeShareModal();
+            }).catch(() => { alert('Failed. Please copy manually.'); });
+        }
+        function closeShareModal() { document.getElementById('share-modal').style.display = 'none'; }
+
+        function renderTransactions() {
+            const t = translations[userSettings.lang] || translations['en'];
+            const txs = getTransactions(); const container = document.getElementById('transactions-container'); container.innerHTML = '';
+            let totalPurchases = 0; let totalSales = 0; let totalGrams = 0; let totalCost = 0; let realizedProfit = 0; let sym = userSettings.currSymbol;
+
+            txs.forEach(tx => {
+                let purity = tx.purity || 24;
+                if(tx.type === 'buy') { totalPurchases += tx.totalPrice; totalGrams += tx.weight; totalCost += tx.totalPrice; } 
+                else { totalSales += tx.totalPrice; totalGrams -= tx.weight; totalCost -= tx.originalPrice; realizedProfit += tx.profit; }
+                const isBuy = tx.type === 'buy'; const typeText = isBuy ? (t.tx_buy||'🟢 Buy') : (t.tx_sell||'🔴 Sell'); const cardClass = isBuy ? 'buy' : 'sell';
+                const serialHtml = tx.serial ? `<span style="font-size:10px; background:var(--bg-color); padding:2px 5px; border-radius:4px;">${tx.serial}</span>` : '';
+                const purityHtml = `<span class="karat-badge">${purity}K</span>`;
+                
+                let unrealizedHtml = '';
+                if(isBuy && globalGramPriceLocal > 0) {
+                    const unRealized = (tx.weight * globalGramPriceLocal * (purity/24)) - tx.totalPrice;
+                    unrealizedHtml = `<div class="tx-fin-item" style="text-align: left;"><span>${t.sum_unrealized || 'Unrealized'}</span><span class="tx-fin-val ${unRealized >= 0 ? 'highlight-green' : ''}" style="direction: ltr;">${unRealized >= 0 ? '+' : ''}${Math.round(unRealized).toLocaleString('en-US')} ${sym}</span></div>`;
+                } else if (!isBuy) {
+                    unrealizedHtml = `<div class="tx-fin-item" style="text-align: left;"><span>${t.sum_realized || 'Realized'}</span><span class="tx-fin-val ${tx.profit >= 0 ? 'highlight-green' : ''}" style="direction: ltr;">${tx.profit >= 0 ? '+' : ''}${Math.round(tx.profit).toLocaleString('en-US')} ${sym}</span></div>`;
+                }
+
+                container.innerHTML += `
+                <div class="tx-card ${cardClass}">
+                    <div class="tx-header"><span class="tx-type">${typeText}</span><span class="tx-date">${tx.date}</span></div>
+                    <div class="tx-body">
+                        <div class="tx-info"><h5>${tx.store} ${serialHtml}</h5><p>${tx.weight.toFixed(2)} ${t.unit_gram_short || 'g'} ${purityHtml}</p></div>
+                        <div class="tx-price" style="direction: ltr;">${Math.round(tx.totalPrice).toLocaleString('en-US')} ${sym}</div>
+                    </div>
+                    <div class="tx-financials"><div class="tx-fin-item"><span>${t.comm_paid || 'Commission:'}</span><span class="tx-fin-val" style="direction: ltr;">${Math.round(Math.abs(tx.commission)).toLocaleString('en-US')} ${sym}</span></div>${unrealizedHtml}</div>
+                    <div class="tx-actions">
+                        <button class="action-btn" onclick="editTransaction(${tx.id})">${t.edit || 'Edit'}</button>
+                        <button class="action-btn delete" onclick="deleteTransaction(${tx.id})">${t.del || 'Delete'}</button>
+                        <button class="action-btn share" onclick="shareReceipt(${tx.id})">${t.share || 'Share'}</button>
+                    </div>
+                </div>`;
+            });
+
+            window.currentTotalPurchases = totalPurchases;
+            window.currentTotalSales = totalSales;
+
+            let storedCap = localStorage.getItem('gold_capital');
+            let cap = 0;
+            if (storedCap === null) {
+                cap = totalPurchases - totalSales; 
+                document.getElementById('manual-capital').value = cap > 0 ? cap : 0; 
+            } else {
+                document.getElementById('manual-capital').value = storedCap;
+                cap = storedCap !== "" ? parseFloat(storedCap) : 0;
+            }
+
+            document.getElementById('total-purchases').innerHTML = `${Math.round(totalPurchases).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; 
+            document.getElementById('total-sales').innerHTML = `${Math.round(totalSales).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            
+            let netCash = cap + totalSales - totalPurchases; 
+            let netCashEl = document.getElementById('net-cash'); netCashEl.innerHTML = `${Math.round(netCash).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; netCashEl.style.color = netCash < 0 ? 'var(--sell-color)' : 'var(--gold-accent)';
+            
+            document.getElementById('sum-cost').innerHTML = `${Math.round(totalCost).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; 
+            document.getElementById('sum-weight').innerText = totalGrams.toFixed(2) + (t.unit_gram_short || "g"); 
+            document.getElementById('sum-avg').innerHTML = totalGrams > 0 ? `${(totalCost / totalGrams).toFixed(2)} <span class="curr-sym">${sym}</span>/${t.unit_gram_short || 'g'}` : `0 <span class="curr-sym">${sym}</span>/${t.unit_gram_short || 'g'}`; 
+            document.getElementById('sum-realized').innerHTML = `${realizedProfit >= 0 ? "+" : ""}${Math.round(realizedProfit).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            
+            let totalCurrentValue = 0;
+            if(globalGramPriceLocal > 0) {
+                txs.filter(tx => tx.type === 'buy').forEach(tx => { let p = tx.purity || 24; totalCurrentValue += (tx.weight * globalGramPriceLocal * (p / 24)); });
+                let totalUnrealized = totalCurrentValue - totalCost;
+                document.getElementById('sum-unrealized').innerHTML = `${totalUnrealized >= 0 ? "+" : ""}${Math.round(totalUnrealized).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; 
+            } else { document.getElementById('sum-unrealized').innerHTML = t.calc_pending || "Calculating..."; }
+        }
+
+        function openBackupModal() { document.getElementById('backup-modal').style.display = 'flex'; }
+        function closeBackupModal() { document.getElementById('backup-modal').style.display = 'none'; }
+
+        function exportJSON() {
+            const txs = getTransactions();
+            const cap = localStorage.getItem('gold_capital') || "0";
+            const backup = { capital: cap, transactions: txs };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `GoldPlus_Backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (confirm(userSettings.lang === 'en' ? "Overwrite current data?" : "هل أنت متأكد من استبدال البيانات الحالية؟")) {
+                        if(parsed.transactions && Array.isArray(parsed.transactions)) {
+                            localStorage.setItem('gold_capital', parsed.capital || "0");
+                            localStorage.setItem('gold_transactions', JSON.stringify(parsed.transactions));
+                        } else if(Array.isArray(parsed)) {
+                            localStorage.setItem('gold_transactions', JSON.stringify(parsed));
+                        } else { return alert("الملف غير صالح!"); }
+                        closeBackupModal(); renderTransactions();
+                        alert(userSettings.lang === 'en' ? "Imported successfully!" : "تمت الاستعادة بنجاح!");
+                    }
+                } catch (err) { alert("خطأ في قراءة الملف. تأكد من أنه ملف JSON صحيح."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportCSV() {
+            const txs = getTransactions(); if(txs.length === 0) return alert("لا توجد بيانات للتصدير.");
+            const headers = ["ID", "Type", "Date", "Store", "Serial", "Purity", "Weight", "Unit", "ScreenPriceUSD", "TotalPrice", "OriginalPrice", "Commission", "Profit", "Notes"];
+            let csvContent = "\uFEFF" + headers.join(",") + "\n"; 
+            txs.forEach(tx => {
+                let row = [ tx.id, tx.type, tx.date, `"${(tx.store||"").replace(/"/g, '""')}"`, `"${(tx.serial||"").replace(/"/g, '""')}"`, tx.purity, tx.weight, tx.unit, tx.screenPriceUsd, tx.totalPrice, tx.originalPrice, tx.commission, tx.profit, `"${(tx.notes||"").replace(/"/g, '""')}"` ];
+                csvContent += row.join(",") + "\n";
+            });
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `GoldPlus_Export_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+        }
+
+        // --- دالة استيراد الإكسيل الخارقة (تنظف الأرقام من الفواصل وتحمي التطبيق) ---
+        function importCSV(event) {
+            const file = event.target.files[0]; if (!file) return;
+            
+            if (file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls')) {
+                alert("عذراً! لقد قمت برفع ملف إكسيل (XLSX). يرجى فتح الملف في الإكسيل، واختيار 'حفظ باسم' (Save As) ثم اختيار صيغة (CSV UTF-8).");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let text = e.target.result;
+                    if (text.includes('workbook.xml') || text.includes('PK\u0003\u0004')) {
+                        alert("هذا الملف ليس بصيغة CSV صحيحة. يرجى حفظه من الإكسيل بصيغة CSV."); return;
+                    }
+                    
+                    let separator = text.indexOf(';') > -1 ? ';' : ','; 
+                    let rows = text.split(/\r?\n/).map(row => row.trim()).filter(row => row !== "");
+                    if (rows.length < 2) return alert("الملف فارغ أو لا يحتوي على بيانات صحيحة.");
+                    
+                    let newTxs = [];
+                    const parseCSVRow = (str) => {
+                        let arr = []; let quote = false; let col = 0;
+                        for (let c = 0; c < str.length; c++) {
+                            let cc = str[c], nc = str[c+1];
+                            if (cc === '"' && quote && nc === '"') { arr[col] = (arr[col]||'') + cc; c++; continue; }
+                            if (cc === '"') { quote = !quote; continue; }
+                            if (cc === separator && !quote) { col++; continue; }
+                            arr[col] = (arr[col]||'') + cc;
+                        }
+                        return arr.map(s => (s||'').trim());
+                    };
+                    
+                    // دالة تنظيف الفواصل العجيبة من الإكسيل ليدخل الرقم سليماً 100%
+                    const parseNum = (val) => {
+                        if(!val) return 0;
+                        let cleanVal = val.toString().replace(/[,،\s]/g, '');
+                        return parseFloat(cleanVal) || 0;
+                    };
+                    
+                    for(let i = 1; i < rows.length; i++) {
+                        let cols = parseCSVRow(rows[i]);
+                        if (cols.length >= 4) {
+                            let safeId = Date.now() + i + Math.floor(Math.random() * 1000);
+                            newTxs.push({
+                                id: safeId, type: cols[1] || 'buy', date: cols[2] || new Date().toISOString().split('T')[0], store: cols[3] || 'غير محدد', serial: cols[4] || '', purity: parseNum(cols[5]) || 24, weight: parseNum(cols[6]), unit: cols[7] || 'gram', screenPriceUsd: parseNum(cols[8]), totalPrice: parseNum(cols[9]), originalPrice: parseNum(cols[10]), commission: parseNum(cols[11]), profit: parseNum(cols[12]), notes: cols[13] || '', payments: []
+                            });
+                        }
+                    }
+                    if(newTxs.length > 0) {
+                        if(confirm(userSettings.lang === 'en' ? "Add these records to current ledger?" : "سيتم إضافة البيانات الجديدة إلى الدفتر الحالي، هل توافق؟")) {
+                            let current = getTransactions();
+                            localStorage.setItem('gold_transactions', JSON.stringify([...current, ...newTxs]));
+                            closeBackupModal(); renderTransactions(); 
+                            alert(userSettings.lang === 'en' ? "Imported successfully!" : "تم استيراد الإكسيل بنجاح!");
+                        }
+                    } else { alert("لم يتم العثور على بيانات صالحة في الملف."); }
+                } catch (err) { alert("حدث خطأ. تأكد من أن الملف سليم وصيغته CSV UTF-8."); console.error(err); }
+            };
+            reader.readAsText(file, "UTF-8");
+        }
+
+        function openModal() { const t = translations[userSettings.lang] || translations['en']; editingTxId = null; document.getElementById('save-btn').innerText = t.save_btn || "Save ✔️"; document.getElementById('payment-methods-container').innerHTML = ''; addPaymentBox(); document.getElementById('tx-weight').value = ''; document.getElementById('tx-purity').value = '24'; document.getElementById('tx-total-price').value = ''; document.getElementById('tx-original-price').value = ''; document.getElementById('tx-serial').value = ''; document.getElementById('tx-notes').value = ''; document.getElementById('tx-modal').style.display = 'flex'; document.getElementById('tx-date').valueAsDate = new Date(); updateModalType(); document.getElementById('tx-screen-price').value = document.getElementById('ounce-usd') ? document.getElementById('ounce-usd').innerText.replace(/,/g, '') : "2050.50"; }
+        function closeModal() { document.getElementById('tx-modal').style.display = 'none'; editingTxId = null; }
+        function updateModalType() { const t = translations[userSettings.lang] || translations['en']; const type = document.getElementById('tx-type').value; if(type === 'buy') { document.getElementById('modal-title').innerText = t.add_tx_buy || 'Buy'; document.getElementById('original-price-group').style.display = 'none'; document.getElementById('total-price-label').innerHTML = `${t.total_price_label||'Total Price'} (<span class="curr-sym">${userSettings.currSymbol}</span>)`; } else { document.getElementById('modal-title').innerText = t.add_tx_sell || 'Sell'; document.getElementById('original-price-group').style.display = 'block'; document.getElementById('total-price-label').innerHTML = `${t.total_price_label||'Total Price'} (<span class="curr-sym">${userSettings.currSymbol}</span>)`; } document.querySelectorAll('.curr-sym').forEach(e => e.innerText = userSettings.currSymbol); }
+        
+        window.onload = () => { applySavedTheme(); applyGlobalTranslations(); fetchGoldPrices(); };
+    </script>
+</body>
+</html>
