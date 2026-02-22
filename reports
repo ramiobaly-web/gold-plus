@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-tag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="rep_title">التقارير - جولد بلس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gold Plus">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <style>
+        :root { --bg-color: #121212; --card-bg: #1E1E1E; --gold-accent: #D4AF37; --text-main: #FFFFFF; --text-sub: #A0A0A0; --nav-bg: #181818; --border-color: #333333; --buy-color: #2E7D32; --sell-color: #C62828; --zakat-bg: rgba(212, 175, 55, 0.05); }
+        body.light-theme { --bg-color: #F5F7FA; --card-bg: #FFFFFF; --gold-accent: #B8860B; --text-main: #121212; --text-sub: #555555; --nav-bg: #FFFFFF; --border-color: #E5E5E5; --buy-color: #388E3C; --sell-color: #D32F2F; --zakat-bg: rgba(184, 134, 11, 0.05); }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 15px 15px 80px 15px; transition: all 0.3s ease; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; } .app-title { color: var(--gold-accent); font-size: 20px; font-weight: 700; } .icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-family: 'Cairo'; font-weight: 600; }
+        .prices-header { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 20px; } .update-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; } .time-stamp { font-size: 11px; color: var(--text-sub); direction: ltr; } .update-btn { background-color: var(--gold-accent); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-family: 'Cairo'; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .mini-dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } .mini-price-card { text-align: center; border-left: 1px solid var(--border-color); padding: 5px 0; } .mini-price-card:nth-child(3n) { border-left: none; } .mini-price-card h3 { margin: 0 0 2px 0; font-size: 11px; color: var(--text-sub); } .mini-local-price { font-size: 13px; font-weight: 700; color: var(--gold-accent); margin: 0; direction: ltr;} .mini-usd-price { font-size: 10px; color: var(--text-sub); margin: 2px 0 0 0; direction: ltr;}
+        .section-title { font-size: 16px; font-weight: 700; margin-top: 25px; margin-bottom: 12px; color: var(--text-main); border-right: 3px solid var(--gold-accent); padding-right: 8px; }
+        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } .report-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: center;} .report-card.full { grid-column: span 2; } .report-card h4 { margin: 0 0 5px 0; font-size: 11px; color: var(--text-sub); } .report-card p { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); direction: ltr;} .val-green { color: var(--buy-color) !important; } .val-gold { color: var(--gold-accent) !important; font-size: 20px !important;}
+        
+        .weight-breakdown { font-size: 13px; text-align: right; margin-top: 10px; direction: rtl;}
+        body[dir="ltr"] .weight-breakdown { text-align: left; direction: ltr; }
+        .weight-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding: 4px 0; color: var(--text-sub);}
+        .weight-row.total-eq { color: var(--gold-accent); font-weight: bold; border-bottom: none; border-top: 2px solid var(--border-color); margin-top: 5px; padding-top: 6px; font-size: 14px;}
+        .w-val { direction: ltr; font-weight: bold; color: var(--text-main); }
+        .weight-row.total-eq .w-val { color: var(--gold-accent); }
+        
+        /* تصميم للأسعار المزدوجة (محلي / دولار) */
+        .dual-price { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .dual-price .local-p { font-size: 16px; font-weight: 700; color: var(--text-main); direction: ltr; }
+        .dual-price .usd-p { font-size: 11px; color: var(--text-sub); direction: ltr; }
+
+        .zakat-card { background-color: var(--zakat-bg); border: 1px solid var(--gold-accent); border-radius: 12px; padding: 20px; } .zakat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 10px; } .zakat-icon { font-size: 30px; } .zakat-title-box h3 { margin: 0; font-size: 18px; color: var(--gold-accent); } .zakat-title-box p { margin: 0; font-size: 11px; color: var(--text-sub); } .zakat-section { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 10px; } .z-sec-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; justify-content: space-between;} .z-sec-title .badge-green { background: rgba(46, 125, 50, 0.2); color: #4CAF50; padding: 2px 6px; border-radius: 4px; font-size: 10px; } .z-sec-title .badge-gray { background: rgba(160, 160, 160, 0.1); color: var(--text-sub); padding: 2px 6px; border-radius: 4px; font-size: 10px; } .z-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: var(--text-sub); } .z-row strong { color: var(--text-main); direction: ltr;} .zakat-final-amount { text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(212, 175, 55, 0.3); } .zakat-final-amount h4 { margin: 0 0 5px 0; color: var(--text-main); font-size: 14px; } .zakat-final-amount .amount { font-size: 24px; font-weight: 700; color: var(--gold-accent); direction: ltr;} .hawl-text { font-size: 11px; color: var(--gold-accent); font-weight: bold; background: rgba(212, 175, 55, 0.1); padding: 4px 8px; border-radius: 4px; margin-top: 8px; text-align: center; border: 1px dashed var(--gold-accent);}
+        .bottom-nav { position: fixed; bottom: 0; right: 0; width: 100%; background-color: var(--nav-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; } .nav-item { text-align: center; color: var(--text-sub); font-size: 11px; cursor: pointer; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none;} .nav-item.active { color: var(--gold-accent); } .nav-icon { font-size: 18px; display: block;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar"><div class="app-title" data-i18n="rep_title">التقارير 📊</div><button class="icon-btn" onclick="toggleTheme()" id="theme-icon">🌙</button></div>
+        
+        <div class="prices-header">
+            <div class="update-bar"><div class="time-stamp" id="last-update" data-i18n="updating">جاري التحديث...</div><button class="update-btn" id="update-btn" onclick="fetchGoldPrices()" data-i18n="update_btn">تحديث السعر</button></div>
+            <div class="mini-dashboard-grid">
+                <div class="mini-price-card">
+                    <h3 data-i18n="ounce">الأونصة</h3>
+                    <p class="mini-local-price"><span id="ounce-local">0</span> <span class="curr-sym">SAR</span></p>
+                    <p class="mini-usd-price"><span id="ounce-usd">0</span> $</p>
+                </div>
+                <div class="mini-price-card">
+                    <h3 data-i18n="gram24">الجرام (24)</h3>
+                    <p class="mini-local-price"><span id="gram-local">0</span> <span class="curr-sym">SAR</span></p>
+                    <p class="mini-usd-price"><span id="gram-usd">0</span> $</p>
+                </div>
+                <div class="mini-price-card">
+                    <h3 data-i18n="kilo">الكيلو</h3>
+                    <p class="mini-local-price"><span id="kilo-local">0</span> <span class="curr-sym">SAR</span></p>
+                    <p class="mini-usd-price"><span id="kilo-usd">0</span> $</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title" data-i18n="gold_analysis">تحليل الذهب</div>
+        <div class="report-grid">
+            <div class="report-card full" style="align-items: stretch; text-align: start;">
+                <h4 data-i18n="weight_breakdown" style="text-align: center; font-size: 14px; color: var(--gold-accent);">تفصيل الأوزان حسب العيار</h4>
+                <div class="weight-breakdown">
+                    <div class="weight-row"><span data-i18n="k24_weight">ذهب عيار 24 (سبائك):</span> <span class="w-val" id="w-24">0.00 g</span></div>
+                    <div class="weight-row"><span data-i18n="k22_weight">ذهب عيار 22 (جنيهات إنجليزية):</span> <span class="w-val" id="w-22">0.00 g</span></div>
+                    <div class="weight-row"><span data-i18n="k21_weight">ذهب عيار 21 (جنيهات رشادية/زينة):</span> <span class="w-val" id="w-21">0.00 g</span></div>
+                    <div class="weight-row"><span data-i18n="k18_weight">ذهب عيار 18:</span> <span class="w-val" id="w-18">0.00 g</span></div>
+                    <div class="weight-row total-eq">
+                        <span data-i18n="total_eq_24k">المجموع المساوي لعيار 24 قيراط:</span> <span class="w-val" id="rep-total-grams-eq">0.00 g</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-card full"><h4 data-i18n="current_gold_value">سعر الذهب الموجود (بالسعر الحالي)</h4><p id="rep-current-value" class="val-gold">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="report-card full"><h4 data-i18n="sum_cost">تكلفة الذهب المتوفر</h4><p id="rep-total-cost">0 <span class="curr-sym">SAR</span></p></div>
+            
+            <div class="report-card">
+                <h4 data-i18n="sum_avg_ounce">متوسط سعر الشراء للأونصة (24K)</h4>
+                <div class="dual-price" id="rep-avg-ounce">
+                    <span class="local-p">0 <span class="curr-sym">SAR</span>/oz</span>
+                    <span class="usd-p">0 $/oz</span>
+                </div>
+            </div>
+            
+            <div class="report-card">
+                <h4 data-i18n="sum_avg_gram">متوسط سعر الشراء للجرام (24K)</h4>
+                <div class="dual-price" id="rep-avg-gram">
+                    <span class="local-p">0 <span class="curr-sym">SAR</span>/g</span>
+                    <span class="usd-p">0 $/g</span>
+                </div>
+            </div>
+
+            <div class="report-card"><h4 data-i18n="sum_realized">الأرباح المحققة (مباع)</h4><p class="val-green" id="rep-realized-profit">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="report-card"><h4 data-i18n="sum_unrealized">الربح غير المحقق</h4><p class="val-green" id="rep-unrealized-profit">0 <span class="curr-sym">SAR</span></p></div>
+        </div>
+
+        <div class="section-title" data-i18n="zakat_title">محرك الزكاة التلقائي</div>
+        <div class="zakat-card">
+            <div class="zakat-header"><span class="zakat-icon">🌙</span><div class="zakat-title-box"><h3 data-i18n="zakat_hawl">متابعة الحول والنصاب</h3><p data-i18n="zakat_desc">يتم حساب 2.5% فقط على الأصول التي أتمت سنة هجرية.</p></div></div>
+            <div class="zakat-section" style="border-left: 3px solid #4CAF50;">
+                <div class="z-sec-title"><span data-i18n="assets_matured">أصول حال عليها الحول</span> <span class="badge-green" id="zakat-status-badge">مستحق</span></div>
+                <div class="z-row"><span><span data-i18n="gold_matured">الذهب المستحق</span> (<span id="zakat-matured-grams">0</span>g <span data-i18n="k24_pure">24K</span>):</span> <strong id="matured-gold-val">0 <span class="curr-sym">SAR</span></strong></div>
+                <div class="z-row"><span data-i18n="available_cash_note">الكاش المتوفر (في حال أتم عاماً هجرياً كاملاً):</span> <strong id="zakat-cash-val">0 <span class="curr-sym">SAR</span></strong></div>
+                <div class="z-row" style="margin-top: 5px; border-top: 1px dashed var(--border-color); padding-top: 5px;"><span data-i18n="zakat_base">الوعاء الزكوي الخاضع:</span> <strong id="zakat-base-val">0 <span class="curr-sym">SAR</span></strong></div>
+            </div>
+            <div class="zakat-section">
+                <div class="z-sec-title"><span data-i18n="assets_immature">ذهب لم يحل عليه الحول</span> <span class="badge-gray" data-i18n="not_due">غير مستحق</span></div>
+                <div class="z-row"><span><span data-i18n="gold_rem">الذهب المتبقي</span> (<span id="zakat-immature-grams">0</span>g <span data-i18n="k24_pure">24K</span>):</span> <strong id="immature-gold-val">0 <span class="curr-sym">SAR</span></strong></div>
+                <div class="hawl-text" id="hawl-time-left">لا يوجد ذهب غير مستحق</div>
+            </div>
+            <div class="zakat-final-amount"><h4 data-i18n="zakat_due_now">الزكاة المستحقة الدفع (2.5%)</h4><div class="amount" id="zakat-amount">0 <span class="curr-sym">SAR</span></div></div>
+            <p style="font-size: 10px; color: var(--text-sub); margin-top: 15px; text-align: center; border-top: 1px dashed var(--border-color); padding-top: 10px;" data-i18n="zakat_note">ملاحظة: حاسبة الزكاة لتسهيل الحساب ويتوجب على الشخص مراجعة أصوله والاستحقاق بالطرق المناسبة. (يتم تحويل الأوزان المعروضة هنا لمعادل عيار 24 لضمان دقة النصاب).</p>
+        </div>
+
+        <div class="section-title" data-i18n="cash_flow">حركة الصندوق</div>
+        <div class="report-grid" style="margin-bottom: 25px;">
+            <div class="report-card full"><h4 data-i18n="invest_amount">مبلغ الاستثمار الكامل</h4><p class="val-gold" id="rep-capital">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="report-card" style="border-left: 3px solid var(--sell-color);"><h4 data-i18n="purchases">مجموع الشراء</h4><p id="rep-purchases">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="report-card" style="border-left: 3px solid var(--buy-color);"><h4 data-i18n="sales">مجموع البيع</h4><p id="rep-sales">0 <span class="curr-sym">SAR</span></p></div>
+            <div class="report-card full" style="background-color: rgba(212, 175, 55, 0.05);"><h4 data-i18n="net_cash">الكاش المتوفر</h4><p class="val-gold" id="rep-net-cash">0 <span class="curr-sym">SAR</span></p></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="HomePage.html" class="nav-item"><span class="nav-icon">🏠</span><span data-i18n="nav_home">الرئيسية</span></a>
+        <a href="ledger.html" class="nav-item"><span class="nav-icon">📓</span><span data-i18n="nav_ledger">الدفتر</span></a>
+        <a href="tools.html" class="nav-item"><span class="nav-icon">🧮</span><span data-i18n="nav_tools">الأدوات</span></a>
+        <a href="locations.html" class="nav-item"><span class="nav-icon">📍</span><span data-i18n="nav_loc">المواقع</span></a>
+        <a href="reports.html" class="nav-item active"><span class="nav-icon">📊</span><span data-i18n="nav_rep">التقارير</span></a>
+    </div>
+
+    <script>
+        const OUNCE_IN_GRAMS = 31.1034768; 
+        const TOLA_IN_GRAMS = 11.6638038;
+        let userSettings = JSON.parse(localStorage.getItem('gold_settings')) || { lang: 'ar', currSymbol: 'SAR', currRate: 3.75 };
+
+        const translations = {
+            "ar": { app_title: "جولد بلس ✨", rep_title: "التقارير 📊", nav_home: "الرئيسية", nav_ledger: "الدفتر", nav_tools: "الأدوات", nav_loc: "المواقع", nav_rep: "التقارير", updating: "جاري التحديث...", updated: "تم التحديث: ", failed: "فشل التحديث", update_btn: "تحديث السعر", ounce: "الأونصة", gram24: "الجرام (24)", kilo: "الكيلو", gold_analysis: "تحليل الذهب", weight_breakdown: "تفصيل الأوزان حسب العيار", k24_weight: "ذهب عيار 24 (سبائك):", k22_weight: "ذهب عيار 22 (جنيهات):", k21_weight: "ذهب عيار 21 (رشادية/زينة):", k18_weight: "ذهب عيار 18:", total_eq_24k: "المجموع المساوي لعيار 24 قيراط:", current_gold_value: "سعر الذهب الموجود (بالسعر الحالي)", sum_cost: "تكلفة الذهب المتوفر", sum_avg_ounce: "متوسط سعر الشراء للأونصة (24K)", sum_avg_gram: "متوسط سعر الشراء للجرام (24K)", sum_realized: "الأرباح المحققة", sum_unrealized: "الربح غير المحقق", zakat_title: "محرك الزكاة", zakat_hawl: "متابعة الحول والنصاب", zakat_desc: "يتم حساب 2.5% فقط على الأصول التي أتمت سنة هجرية.", assets_matured: "أصول حال عليها الحول", gold_matured: "الذهب المستحق", k24_pure: "صافي", available_cash_note: "الكاش المتوفر (في حال أتم عاماً هجرياً كاملاً):", zakat_base: "الوعاء الزكوي الخاضع:", assets_immature: "ذهب لم يحل عليه الحول", not_due: "غير مستحق", gold_rem: "الذهب المتبقي", zakat_due_now: "الزكاة المستحقة الدفع (2.5%)", zakat_note: "ملاحظة: حاسبة الزكاة لتسهيل الحساب. (يتم تحويل الأوزان المعروضة هنا لمعادل عيار 24 لضمان دقة النصاب).", cash_flow: "حركة الصندوق", invest_amount: "الاستثمار الكامل", purchases: "مجموع الشراء", sales: "مجموع البيع", net_cash: "الكاش المتوفر", dir: "rtl" },
+            "en": { app_title: "Gold Plus ✨", rep_title: "Reports 📊", nav_home: "Home", nav_ledger: "Ledger", nav_tools: "Tools", nav_loc: "Locations", nav_rep: "Reports", updating: "Updating...", updated: "Updated: ", failed: "Failed", update_btn: "Update Price", ounce: "Ounce", gram24: "Gram (24)", kilo: "Kilo", gold_analysis: "Gold Analysis", weight_breakdown: "Weight Breakdown by Karat", k24_weight: "24K Gold (Bullion):", k22_weight: "22K Gold (Coins):", k21_weight: "21K Gold (Jewelry/Coins):", k18_weight: "18K Gold:", total_eq_24k: "Total Equivalent to 24K:", current_gold_value: "Current Gold Value", sum_cost: "Total Gold Cost", sum_avg_ounce: "Avg. Purchase Price per Ounce (24K)", sum_avg_gram: "Avg. Purchase Price per Gram (24K)", sum_realized: "Realized Profit", sum_unrealized: "Unrealized Profit", zakat_title: "Zakat Engine", zakat_hawl: "Hawl Tracking", zakat_desc: "Calculates 2.5% only on assets held for a lunar year.", assets_matured: "Matured Assets", gold_matured: "Matured Gold", k24_pure: "Pure", available_cash_note: "Available Cash (if a full Hijri year passed):", zakat_base: "Zakat Base:", assets_immature: "Immature Assets", not_due: "Not Due", gold_rem: "Remaining Gold", zakat_due_now: "Zakat Due Now (2.5%)", zakat_note: "* Note: Zakat calculator is to facilitate. All weights here are converted to 24K equivalent for Nisab accuracy.", cash_flow: "Cash Flow", invest_amount: "Total Investment", purchases: "Total Purchases", sales: "Total Sales", net_cash: "Available Cash", dir: "ltr" },
+            "ur": { nav_rep: "رپورٹس", gold_analysis: "تجزیہ", weight_breakdown: "وزن کی تفصیل", k24_weight: "24 قیراط:", k22_weight: "22 قیراط:", k21_weight: "21 قیراط:", k18_weight: "18 قیراط:", total_eq_24k: "24 قیراط کے برابر:", current_gold_value: "موجودہ قیمت", sum_cost: "کل قیمت", sum_avg_ounce: "اوسط قیمت فی اونس (24K)", sum_avg_gram: "اوسط قیمت فی گرام (24K)", sum_realized: "منافع", sum_unrealized: "غیر حقیقی منافع", zakat_title: "زکوۃ انجن", zakat_hawl: "حول ٹریکنگ", zakat_desc: "2.5٪ صرف ایک سال کی ملکیت پر", assets_matured: "مکمل اثاثے", gold_matured: "سونا", k24_pure: "خالص", available_cash_note: "کیش (ایک سال مکمل ہونے پر):", zakat_base: "زکوۃ بیس:", assets_immature: "نامکمل اثاثے", not_due: "ادائیگی نہیں", gold_rem: "باقی سونا", zakat_due_now: "زکوۃ (2.5%)", zakat_note: "نوٹ: یہ صرف سہولت کے لیے ہے۔ وزن کو 24 قیراط میں تبدیل کیا گیا ہے۔", cash_flow: "کیش فلو", invest_amount: "سرمایہ کاری:", purchases: "خریداریاں:", sales: "فروخت:", net_cash: "دستیاب رقم", updating: "اپ ڈیٹ...", updated: "اپ ڈیٹ: ", update_btn: "اپ ڈیٹ", ounce: "اونس", gram24: "گرام", kilo: "کلو", dir: "rtl" },
+            "id": { nav_rep: "Laporan", gold_analysis: "Analisis Emas", weight_breakdown: "Rincian Berat per Karat", k24_weight: "Emas 24K:", k22_weight: "Emas 22K:", k21_weight: "Emas 21K:", k18_weight: "Emas 18K:", total_eq_24k: "Total Setara 24K:", current_gold_value: "Nilai Saat Ini", sum_cost: "Total Biaya", sum_avg_ounce: "Harga Rata-rata per Ons (24K)", sum_avg_gram: "Harga Rata-rata per Gram (24K)", sum_realized: "Keuntungan", sum_unrealized: "Untung Belum Direalisasi", zakat_title: "Zakat", zakat_hawl: "Hawl", zakat_desc: "2.5% setelah setahun", assets_matured: "Aset Matang", gold_matured: "Emas", k24_pure: "Murni", available_cash_note: "Kas Tersedia (jika haul terpenuhi):", zakat_base: "Dasar Zakat:", assets_immature: "Belum Matang", not_due: "Belum", gold_rem: "Sisa Emas", zakat_due_now: "Zakat (2.5%)", zakat_note: "* Catatan: Kalkulator Zakat hanya untuk memfasilitasi. Berat dikonversi ke setara 24K.", cash_flow: "Arus Kas", invest_amount: "Investasi:", purchases: "Pembelian:", sales: "Penjualan:", net_cash: "Tersedia", updating: "Memperbarui...", updated: "Diperbarui: ", update_btn: "Perbarui", ounce: "Ons", gram24: "Gram", kilo: "Kilo", dir: "ltr" },
+            "hi": { nav_rep: "रिपोर्ट", gold_analysis: "स्वर्ण विश्लेषण", weight_breakdown: "कैरेट के अनुसार वजन", k24_weight: "24K स्वर्ण:", k22_weight: "22K स्वर्ण:", k21_weight: "21K स्वर्ण:", k18_weight: "18K स्वर्ण:", total_eq_24k: "24K के बराबर कुल:", current_gold_value: "वर्तमान मूल्य", sum_cost: "कुल लागत", sum_avg_ounce: "औसत मूल्य प्रति औंस (24K)", sum_avg_gram: "औसत मूल्य प्रति ग्राम (24K)", sum_realized: "लाभ", sum_unrealized: "अवास्तविक लाभ", zakat_title: "जकात", zakat_hawl: "हौल ट्रैकिंग", zakat_desc: "2.5% केवल एक वर्ष के लिए", assets_matured: "परिपक्व संपत्ति", gold_matured: "स्वर्ण", k24_pure: "शुद्ध", available_cash_note: "नकद (यदि एक वर्ष बीत चुका है):", zakat_base: "जकात आधार:", assets_immature: "अपरिपक्व", not_due: "देय नहीं", gold_rem: "शेष स्वर्ण", zakat_due_now: "जकात (2.5%)", zakat_note: "* नोट: यह गणना की सुविधा के लिए है। वजन 24K में परिवर्तित किया गया है।", cash_flow: "कैश फ्लो", invest_amount: "निवेश:", purchases: "खरीद:", sales: "बिक्री:", net_cash: "उपलब्ध", updating: "अपडेट हो रहा है...", updated: "अपडेट: ", update_btn: "अपडेट", ounce: "औंस", gram24: "ग्राम", kilo: "किलो", dir: "ltr" },
+            "tl": { nav_rep: "Ulat", gold_analysis: "Pagsusuri ng Ginto", weight_breakdown: "Timbang bawat Karat", k24_weight: "24K Ginto:", k22_weight: "22K Ginto:", k21_weight: "21K Ginto:", k18_weight: "18K Ginto:", total_eq_24k: "Total Katumbas ng 24K:", current_gold_value: "Kasalukuyang Halaga", sum_cost: "Total Gastos", sum_avg_ounce: "Avg Presyo bawat Onsa (24K)", sum_avg_gram: "Avg Presyo bawat Gramo (24K)", sum_realized: "Tubo", sum_unrealized: "Unrealized Tubo", zakat_title: "Zakat", zakat_hawl: "Hawl", zakat_desc: "2.5% pagkatapos ng isang taon", assets_matured: "Assets", gold_matured: "Ginto", k24_pure: "Puro", available_cash_note: "Cash (kapag tapos na ang taon):", zakat_base: "Zakat Base:", assets_immature: "Hindi pa", not_due: "Wala pa", gold_rem: "Natitira", zakat_due_now: "Zakat (2.5%)", zakat_note: "* Note: Ang Zakat ay batay sa 24K na timbang.", cash_flow: "Cash Flow", invest_amount: "Puhunan:", purchases: "Bili:", sales: "Benta:", net_cash: "Available", updating: "Ina-update...", updated: "Na-update: ", update_btn: "I-update", ounce: "Onsa", gram24: "Gramo", kilo: "Kilo", dir: "ltr" },
+            "tr": { nav_rep: "Raporlar", gold_analysis: "Altın Analizi", weight_breakdown: "Ayara Göre Ağırlık", k24_weight: "24 Ayar Altın:", k22_weight: "22 Ayar Altın:", k21_weight: "21 Ayar Altın:", k18_weight: "18 Ayar Altın:", total_eq_24k: "24 Ayara Eşdeğer Toplam:", current_gold_value: "Mevcut Değer", sum_cost: "Toplam Maliyet", sum_avg_ounce: "Ort Fiyat Ons Başına (24 Ayar)", sum_avg_gram: "Ort Fiyat Gram Başına (24 Ayar)", sum_realized: "Kar", sum_unrealized: "Gerçekleşmemiş Kar", zakat_title: "Zekat", zakat_hawl: "Hawl", zakat_desc: "%2.5", assets_matured: "Varlıkları", gold_matured: "Altın", k24_pure: "Saf", available_cash_note: "Nakit (bir yıl geçmişse):", zakat_base: "Zekat Matrahı:", assets_immature: "Olgunlaşmamış", not_due: "Yok", gold_rem: "Kalan", zakat_due_now: "Zekat (%2.5)", zakat_note: "* Not: Zekat hesaplaması 24 Ayar eşdeğerine göre yapılır.", cash_flow: "Nakit Akışı", invest_amount: "Yatırım:", purchases: "Alış:", sales: "Satış:", net_cash: "Mevcut", updating: "Güncelleniyor...", updated: "Güncellendi: ", update_btn: "Güncelle", ounce: "Ons", gram24: "Gram", kilo: "Kilo", dir: "ltr" },
+            "fr": { nav_rep: "Rapports", gold_analysis: "Analyse de l'or", weight_breakdown: "Répartition du poids", k24_weight: "Or 24K :", k22_weight: "Or 22K :", k21_weight: "Or 21K :", k18_weight: "Or 18K :", total_eq_24k: "Total équivalent 24K :", current_gold_value: "Valeur Actuelle", sum_cost: "Coût Total", sum_avg_ounce: "Prix Moyen par Once (24K)", sum_avg_gram: "Prix Moyen par Gramme (24K)", sum_realized: "Bénéfice", sum_unrealized: "Bénéfice latent", zakat_title: "Zakat", zakat_hawl: "Hawl", zakat_desc: "2.5%", assets_matured: "Actifs", gold_matured: "Or", k24_pure: "Pur", available_cash_note: "Espèces (si un an est passé):", zakat_base: "Base Zakat:", assets_immature: "Non échu", not_due: "Non", gold_rem: "Restant", zakat_due_now: "Zakat (2.5%)", zakat_note: "* Remarque: Le calcul est basé sur l'équivalent 24K.", cash_flow: "Trésorerie", invest_amount: "Investissement:", purchases: "Achats:", sales: "Ventes:", net_cash: "Disponible", updating: "Mise à jour...", updated: "Mis à jour: ", update_btn: "Mettre à jour", ounce: "Once", gram24: "Gramme", kilo: "Kilo", dir: "ltr" },
+            "fa": { nav_rep: "گزارش‌ها", gold_analysis: "تحلیل طلا", weight_breakdown: "تفکیک وزن بر اساس عیار", k24_weight: "طلای 24 عیار:", k22_weight: "طلای 22 عیار:", k21_weight: "طلای 21 عیار:", k18_weight: "طلای 18 عیار:", total_eq_24k: "مجموع معادل 24 عیار:", current_gold_value: "ارزش فعلی", sum_cost: "هزینه کل", sum_avg_ounce: "میانگین قیمت هر اونس (24K)", sum_avg_gram: "میانگین قیمت هر گرم (24K)", sum_realized: "سود", sum_unrealized: "سود تحقق نیافته", zakat_title: "زکات", zakat_hawl: "حول", zakat_desc: "2.5% پس از یک سال", assets_matured: "دارایی‌ها", gold_matured: "طلا", k24_pure: "خالص", available_cash_note: "نقد (در صورت گذشت یک سال):", zakat_base: "پایه زکات:", assets_immature: "نارس", not_due: "خیر", gold_rem: "باقی‌مانده", zakat_due_now: "زکات (2.5%)", zakat_note: "* توجه: محاسبات بر اساس معادل 24 عیار انجام می‌شود.", cash_flow: "نقدینگی", invest_amount: "سرمایه:", purchases: "خرید:", sales: "فروش:", net_cash: "موجودی", updating: "در حال بروزرسانی...", updated: "بروزرسانی شد: ", update_btn: "بروزرسانی", ounce: "اونس", gram24: "گرم", kilo: "کیلو", dir: "rtl" },
+            "bn": { nav_rep: "রিপোর্ট", gold_analysis: "স্বর্ণ বিশ্লেষণ", weight_breakdown: "ক্যারেট অনুযায়ী ওজন", k24_weight: "24K স্বর্ণ:", k22_weight: "22K স্বর্ণ:", k21_weight: "21K স্বর্ণ:", k18_weight: "18K স্বর্ণ:", total_eq_24k: "24K এর সমতুল্য মোট:", current_gold_value: "বর্তমান মূল্য", sum_cost: "মোট খরচ", sum_avg_ounce: "গড় দাম প্রতি আউন্স (24K)", sum_avg_gram: "গড় দাম প্রতি গ্রাম (24K)", sum_realized: "লাভ", sum_unrealized: "অবাস্তব লাভ", zakat_title: "যাকাত", zakat_hawl: "হাওল", zakat_desc: "2.5%", assets_matured: "সম্পদ", gold_matured: "স্বর্ণ", k24_pure: "খাঁটি", available_cash_note: "নগদ (যদি এক বছর পার হয়):", zakat_base: "ভিত্তি:", assets_immature: "অপরিণত", not_due: "বাকি নেই", gold_rem: "অবশিষ্ট", zakat_due_now: "যাকাত (2.5%)", zakat_note: "* নোট: যাকাত 24K সমতুল্য ওজনের উপর ভিত্তি করে।", cash_flow: "ক্যাশ ফ্লো", invest_amount: "বিনিয়োগ:", purchases: "ক্রয়:", sales: "বিক্রয়:", net_cash: "উপলব্ধ", updating: "আপডেট হচ্ছে...", updated: "আপডেট: ", update_btn: "আপডেট", ounce: "আউন্স", gram24: "গ্রাম", kilo: "কিলো", dir: "ltr" }
+        };
+
+        function applySavedTheme() {
+            if (localStorage.getItem('gold_theme') === 'light') {
+                document.body.classList.add('light-theme');
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.innerText = '☀️';
+            }
+        }
+
+        function toggleTheme() { 
+            document.body.classList.toggle('light-theme'); 
+            const isLight = document.body.classList.contains('light-theme');
+            const icon = document.getElementById('theme-icon'); 
+            if(icon) icon.innerText = isLight ? '☀️' : '🌙'; 
+            localStorage.setItem('gold_theme', isLight ? 'light' : 'dark');
+        }
+
+        function applyGlobalTranslations() {
+            const t = translations[userSettings.lang] || translations['en'];
+            document.documentElement.dir = t.dir || 'ltr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerText = t[key];
+            });
+            document.querySelectorAll('.curr-sym').forEach(e => e.innerText = userSettings.currSymbol);
+        }
+
+        async function fetchGoldPrices() {
+            const t = translations[userSettings.lang] || translations['ar'];
+            const updateBtn = document.getElementById('update-btn');
+            updateBtn.disabled = true; document.getElementById('last-update').innerText = t.updating || "Updating...";
+            try {
+                let response = await fetch("https://api.gold-api.com/price/XAU");
+                let data = await response.json(); let liveOunceUsd = data.price;
+                if(!liveOunceUsd || isNaN(liveOunceUsd)) throw new Error("Invalid");
+                let rate = parseFloat(userSettings.currRate) || 3.75;
+                let globalGramPriceLocal = (liveOunceUsd / OUNCE_IN_GRAMS) * rate;
+                
+                let gramUsd = liveOunceUsd / OUNCE_IN_GRAMS;
+                
+                document.getElementById('ounce-usd').innerText = liveOunceUsd.toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('ounce-local').innerText = Math.round(liveOunceUsd * rate).toLocaleString('en-US');
+                document.getElementById('gram-usd').innerText = (liveOunceUsd / OUNCE_IN_GRAMS).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('gram-local').innerText = globalGramPriceLocal.toFixed(2);
+                document.getElementById('kilo-usd').innerText = ((liveOunceUsd / OUNCE_IN_GRAMS) * 1000).toLocaleString('en-US', {minimumFractionDigits: 2});
+                document.getElementById('kilo-local').innerText = Math.round(globalGramPriceLocal * 1000).toLocaleString('en-US');
+                
+                let now = new Date(); document.getElementById('last-update').innerText = (t.updated || "") + now.toLocaleTimeString(userSettings.lang === 'en' ? 'en-US' : 'ar-SA', {hour: '2-digit', minute:'2-digit'});
+                
+                generateReportsFromData(globalGramPriceLocal, userSettings.currSymbol); 
+            } catch(e) { document.getElementById('last-update').innerText = t.failed || "Failed"; } finally { updateBtn.disabled = false; }
+        }
+
+        function generateReportsFromData(currentGramPriceLocal, sym) {
+            const txs = JSON.parse(localStorage.getItem('gold_transactions')) || [];
+            const cap = parseFloat(localStorage.getItem('gold_capital')) || 0;
+            let rate = parseFloat(userSettings.currRate) || 3.75;
+
+            let totalPurchases = 0; let totalSales = 0;
+            let weightByKarat = { 24: 0, 22: 0, 21: 0, 18: 0 };
+            let totalEq24kGrams = 0;  
+            let totalCost = 0; let realizedProfit = 0;
+            let matured24kGrams = 0; let immature24kGrams = 0; let closestDaysLeft = 354;
+
+            const today = new Date();
+
+            txs.forEach(tx => {
+                let purity = parseInt(tx.purity) || 24;
+                let weightInGrams = tx.weight;
+                if(tx.unit === 'ounce') weightInGrams *= OUNCE_IN_GRAMS;
+                else if(tx.unit === 'tola') weightInGrams *= TOLA_IN_GRAMS;
+                else if(tx.unit === 'kilo') weightInGrams *= 1000;
+
+                let eq24kWeight = weightInGrams * (purity / 24); 
+
+                if(tx.type === 'buy') {
+                    totalPurchases += tx.totalPrice; 
+                    if(weightByKarat[purity] !== undefined) weightByKarat[purity] += weightInGrams;
+                    totalEq24kGrams += eq24kWeight;
+                    totalCost += tx.totalPrice;
+                    
+                    let txDate = new Date(tx.date); let diffDays = Math.floor((today - txDate) / (1000 * 60 * 60 * 24));
+                    if (diffDays >= 354) { matured24kGrams += eq24kWeight; } 
+                    else { immature24kGrams += eq24kWeight; let daysLeft = 354 - diffDays; if(daysLeft < closestDaysLeft) closestDaysLeft = daysLeft; }
+                } else {
+                    totalSales += tx.totalPrice; 
+                    if(weightByKarat[purity] !== undefined) weightByKarat[purity] -= weightInGrams;
+                    totalEq24kGrams -= eq24kWeight;
+                    totalCost -= tx.originalPrice; 
+                    realizedProfit += tx.profit;
+                    
+                    if (matured24kGrams >= eq24kWeight) { matured24kGrams -= eq24kWeight; } 
+                    else { immature24kGrams -= (eq24kWeight - matured24kGrams); matured24kGrams = 0; }
+                }
+            });
+
+            document.getElementById('w-24').innerText = weightByKarat[24].toFixed(2) + " g";
+            document.getElementById('w-22').innerText = weightByKarat[22].toFixed(2) + " g";
+            document.getElementById('w-21').innerText = weightByKarat[21].toFixed(2) + " g";
+            document.getElementById('w-18').innerText = weightByKarat[18].toFixed(2) + " g";
+            document.getElementById('rep-total-grams-eq').innerText = totalEq24kGrams.toFixed(2) + " g";
+
+            const hawlElement = document.getElementById('hawl-time-left');
+            if(immature24kGrams > 0) {
+                let m = Math.floor(closestDaysLeft / 30); let d = closestDaysLeft % 30;
+                let text = userSettings.lang === 'en' ? "Next due in: " : "أقرب دفعة تستحق بعد: ";
+                if(m > 0) text += userSettings.lang === 'en' ? `${m} months ` : `${m} شهر `;
+                if(d > 0) text += userSettings.lang === 'en' ? `and ${d} days` : `و ${d} يوم`;
+                hawlElement.innerText = text; hawlElement.style.display = "block";
+            } else { hawlElement.style.display = "none"; }
+
+            const netCash = cap + totalSales - totalPurchases;
+            const currentGoldValue = totalEq24kGrams * currentGramPriceLocal; 
+            const unrealizedProfit = currentGoldValue - totalCost;
+
+            // حساب متوسط سعر الشراء للجرام (محلي ودولار)
+            let avgPricePerGramLocal = totalEq24kGrams > 0 ? (totalCost / totalEq24kGrams) : 0;
+            let avgPricePerGramUsd = avgPricePerGramLocal / rate;
+
+            // حساب متوسط سعر الشراء للأونصة (محلي ودولار)
+            let avgPricePerOunceLocal = avgPricePerGramLocal * OUNCE_IN_GRAMS;
+            let avgPricePerOunceUsd = avgPricePerGramUsd * OUNCE_IN_GRAMS;
+
+            document.getElementById('rep-current-value').innerHTML = `${Math.round(currentGoldValue).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('rep-total-cost').innerHTML = `${Math.round(totalCost).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            
+            // تحديث بطاقة الأونصة المزدوجة
+            document.getElementById('rep-avg-ounce').innerHTML = `
+                <span class="local-p">${avgPricePerOunceLocal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="curr-sym">${sym}</span>/oz</span>
+                <span class="usd-p">${avgPricePerOunceUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} $/oz</span>
+            `;
+
+            // تحديث بطاقة الجرام المزدوجة
+            document.getElementById('rep-avg-gram').innerHTML = `
+                <span class="local-p">${avgPricePerGramLocal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="curr-sym">${sym}</span>/g</span>
+                <span class="usd-p">${avgPricePerGramUsd.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} $/g</span>
+            `;
+            
+            document.getElementById('rep-realized-profit').innerHTML = `${realizedProfit >= 0 ? "+" : ""}${Math.round(realizedProfit).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            
+            const profitEl = document.getElementById('rep-unrealized-profit');
+            if(unrealizedProfit >= 0) { profitEl.innerHTML = `+ ${Math.round(unrealizedProfit).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; profitEl.className = "val-green"; } 
+            else { profitEl.innerHTML = `${Math.round(unrealizedProfit).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`; profitEl.className = ""; profitEl.style.color = "var(--sell-color)"; }
+
+            document.getElementById('rep-capital').innerHTML = `${Math.round(cap).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('rep-purchases').innerHTML = `${Math.round(totalPurchases).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('rep-sales').innerHTML = `${Math.round(totalSales).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('rep-net-cash').innerHTML = `${Math.round(netCash).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+
+            const maturedGoldValue = matured24kGrams * currentGramPriceLocal; 
+            const immatureGoldValue = immature24kGrams * currentGramPriceLocal;
+            const totalWealthGramsEq24k = totalEq24kGrams + (netCash / currentGramPriceLocal);
+            
+            let zakatBase = 0; let zakatAmount = 0;
+            if (totalWealthGramsEq24k >= 85) { 
+                zakatBase = maturedGoldValue + netCash; zakatAmount = zakatBase * 0.025;
+                document.getElementById('zakat-status-badge').innerText = userSettings.lang === 'en' ? "Nisab Met" : "النصاب متجاوز"; document.getElementById('zakat-status-badge').className = "badge-green";
+            } else {
+                document.getElementById('zakat-status-badge').innerText = userSettings.lang === 'en' ? "Not Met" : "لم يبلغ النصاب"; document.getElementById('zakat-status-badge').className = "badge-gray";
+            }
+
+            document.getElementById('zakat-matured-grams').innerText = matured24kGrams.toFixed(2);
+            document.getElementById('matured-gold-val').innerHTML = `${Math.round(maturedGoldValue).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('zakat-cash-val').innerHTML = `${Math.round(netCash).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('zakat-base-val').innerHTML = `${Math.round(zakatBase).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('zakat-immature-grams').innerText = immature24kGrams.toFixed(2);
+            document.getElementById('immature-gold-val').innerHTML = `${Math.round(immatureGoldValue).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+            document.getElementById('zakat-amount').innerHTML = `${Math.round(zakatAmount).toLocaleString('en-US')} <span class="curr-sym">${sym}</span>`;
+        }
+
+        window.onload = () => { applySavedTheme(); applyGlobalTranslations(); fetchGoldPrices(); };
+    </script>
+</body>
+</html>
